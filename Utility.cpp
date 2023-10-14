@@ -6,7 +6,7 @@
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
-
+#include <csignal>
 #include <thread>
 
 int32_t getch() {
@@ -19,6 +19,25 @@ int32_t getch() {
     ch = getchar();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
     return ch;
+}
+
+void signal_handler(int signum) {
+    switch (signum) {
+	case SIGINT:
+	    if (system("clear"))
+		std::cout << "Command: clear error" << std::endl;
+
+	    break;
+
+	default:
+	    break;
+    }
+
+    std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ" << std::endl
+                  << "1. БИП"                << std::endl
+                  << "2. SIM"                << std::endl
+                  << "3. CAN"                << std::endl
+                  << "command> ";
 }
 
 test::IUtility::IUtility() {
@@ -101,6 +120,14 @@ bool test::IUtility::SIM() {
         return false;
     }
 
+    std::ofstream resolv("/etc/resolv.conf");
+
+    if (resolv.is_open()) {
+	resolv << "nameserver 8.8.8.8";
+
+	resolv.close();
+    }
+
     if (system("speedtest")) {
         std::cout << "Modem speedtest error" << std::endl;
 
@@ -121,6 +148,8 @@ bool test::IUtility::CAN() {
 }
 
 void test::IUtility::menu() {
+    signal(SIGINT, signal_handler);
+
     int pick_value     = 0;
     int pick_led_value = 0;
 

@@ -1,3 +1,4 @@
+
 //
 // Created by ritn on 10/13/23.
 //
@@ -9,6 +10,7 @@
 #include <vector>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <functional>
 
 using json       = nlohmann::json;
 using file_read  =  std::ifstream;
@@ -16,11 +18,18 @@ using file_read  =  std::ifstream;
 namespace test {
     class IUtility {
     private:
-        std::string config_name;
+	enum class button
+		: uint8_t {
+	    BUTTON_SOS = 0x38,
+	    BUTTON_SRV = 0x39
+	};
 
-        std::string  path_sos_led_script;
-        std::string path_sim_init_script;
-        std::string        path_platform;
+        std::string 		 config_name;
+        std::string      path_sos_led_script;
+        std::string     path_sim_init_script;
+        std::string            path_platform;
+
+	static void button_handler(const button&);
 
     public:
         enum class BIP_mode
@@ -33,7 +42,7 @@ namespace test {
         IUtility();
         IUtility(const std::string& name);
 
-        bool BIP(const BIP_mode&);
+        bool BIP(const BIP_mode&, bool);
         bool SIM();
         bool CAN();
 

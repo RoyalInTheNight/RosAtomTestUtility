@@ -4,12 +4,13 @@
 #include "IUtility.h"
 
 #include <iostream>
-#include <termios.h>
+// #include <termios.h>
 #include <unistd.h>
 #include <csignal>
 #include <thread>
+#include <memory>
 
-int32_t getch() {
+/* int32_t getch() {
     struct termios oldattr, newattr;
     int32_t ch;
     tcgetattr(STDIN_FILENO, &oldattr);
@@ -19,7 +20,7 @@ int32_t getch() {
     ch = getchar();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
     return ch;
-}
+} */
 
 void signal_handler(int signum) {
     switch (signum) {
@@ -84,18 +85,91 @@ test::IUtility::IUtility(const std::string &name) {
     }
 }
 
-bool test::IUtility::BIP(const test::IUtility::BIP_mode& mode) {
-    if (mode == BIP_mode::LED_SOS_RED)
-        path_sos_led_script += path_sos_led_script + " red";
+#include <array>
+#include <cstdio>
 
-    if (mode == BIP_mode::LED_SOS_GREEN)
-        path_sos_led_script += path_sos_led_script + " green";
+void test::IUtility::button_handler(const button& btn) {
+    auto pipe_exec = [&](const char *cmd) -> std::string {
+	if (cmd == nullptr)
+	    return "";
 
-    if (mode == BIP_mode::LED_SRV)
-        path_sos_led_script += path_sos_led_script + " srv";
+	std::array<char, 128> buff;
+	std::string result;
 
-    if (system(path_sos_led_script.c_str())) {
-        std::cout << "Command: " << path_sos_led_script << " error" << std::endl;
+	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+
+	if (!pipe) return "";
+
+	while (fgets(buff.data(), buff.size(), pipe.get()) != nullptr)
+	    result += buff.data();;
+
+	return result;
+    };
+
+    bool srv_pressed = false;
+    bool sos_pressed = false;
+
+    while (true) {
+    	if (btn == button::BUTTON_SOS) {
+		if (std::stoi(pipe_exec("gpioget 3 8")) == 1) {
+			if (srv_pressed)
+				std::cout << "[ INFO ]Button sos unpressed" << std::endl;				
+
+			srv_pressed = false;
+		}
+
+		if (std::stoi(pipe_exec("gpioget 3 8")) == 0) {
+			if (!srv_pressed)
+				std::cout << "[ INFO ]Button sos pressed" << std::endl;
+
+			srv_pressed = true;
+		}
+    	}
+
+    	if (btn == button::BUTTON_SRV) {
+		if (std::stoi(pipe_exec("gpioget 3 9")) == 1) {
+			if (sos_pressed)
+				std::cout << "[ INFO ]Button srv unpressed" << std::endl;
+
+			sos_pressed = false;
+		}
+
+		if (std::stoi(pipe_exec("gpioget 3 9")) == 0) {
+			if (!sos_pressed)
+				std::cout << "[ INFO ]Button srv pressed" << std::endl;
+
+			sos_pressed = true;
+		}
+    	}
+    }
+}
+
+bool test::IUtility::BIP(const test::IUtility::BIP_mode& mode, bool led) {
+    std::string path = path_sos_led_script;
+
+    if (mode == BIP_mode::LED_SOS_RED) {
+        path = path_sos_led_script + " red";
+	
+	if (led)
+	    path += " 1";
+    }
+
+    if (mode == BIP_mode::LED_SOS_GREEN) {
+        path = path_sos_led_script + " green";
+
+        if (led)
+	    path += " 1";
+    }
+
+    if (mode == BIP_mode::LED_SRV) {
+        path = path_sos_led_script + " srv";
+
+	if (led)
+	    path += " 1";
+    }
+
+    if (system(path.c_str())) {
+        std::cout << "Command: " << path << " error" << std::endl;
 
         return false;
     }
@@ -150,8 +224,15 @@ bool test::IUtility::CAN() {
 void test::IUtility::menu() {
     signal(SIGINT, signal_handler);
 
+    std::thread(button_handler, button::BUTTON_SOS).detach();
+    std::thread(button_handler, button::BUTTON_SRV).detach();
+
     int pick_value     = 0;
     int pick_led_value = 0;
+
+    bool led_red   = false;
+    bool led_green = false;
+    bool led_srv   = false;
 
     while (true) {
         std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ" << std::endl
@@ -164,15 +245,23 @@ void test::IUtility::menu() {
 
         switch (pick_value) {
             case 1:
+		while (true) {
                 std::cout << "1. LED_SOS_RED"   << std::endl
                           << "2. LED_SOS_GREEN" << std::endl
                           << "3. LED_SRV"       << std::endl
+			  << "4. EXIT"		<< std::endl
                           << "led_commmand> ";
 
                 std::cin >> pick_led_value;
 
                 if (pick_led_value == 1) {
-                    if (BIP(BIP_mode::LED_SOS_RED))
+		    if (led_red == false)
+			led_red = true;
+
+		    else
+			led_red = false;
+
+                    if (BIP(BIP_mode::LED_SOS_RED, led_red))
                         std::cout << "Led red pick success" << std::endl;
 
                     else
@@ -180,7 +269,13 @@ void test::IUtility::menu() {
                 }
 
                 else if (pick_led_value == 2) {
-                    if (BIP(BIP_mode::LED_SOS_GREEN))
+		    if (led_green == false)
+			led_green = true;
+
+		    else
+			led_green = false;
+
+                    if (BIP(BIP_mode::LED_SOS_GREEN, led_green))
                         std::cout << "Led green pick failed" << std::endl;
 
                     else
@@ -188,17 +283,40 @@ void test::IUtility::menu() {
                 }
 
                 else if (pick_led_value == 3) {
-                    if (BIP(BIP_mode::LED_SRV))
+		    if (led_srv == false)
+			led_srv = true;
+
+		    else
+			led_srv = false;
+
+                    if (BIP(BIP_mode::LED_SRV, led_srv))
                         std::cout << "Led srv pick failed" << std::endl;
 
                     else
                         std::cout << "Led srv pick failed" << std::endl;
                 }
 
-                else
-                    std::cout << "Unknown led" << std::endl;
+		else if (pick_led_value == 4) {
+		    break;
+		}
 
-                break;
+                  else
+                      std::cout << "Unknown led" << std::endl;
+
+                      // break;
+
+		      std::cout << "_____________________________________" << std::endl;
+		      std::cout << "|led_red|led_green|led_srv|   pick  |" << std::endl;
+		      std::cout << "|_______|_________|_______|_________|" << std::endl
+			  	<< "|   "     << led_red 
+			  	<< "   |    " << led_green 
+			  	<< "    |   " << led_srv
+			  	<< "   |    " << pick_led_value << "    |" << std::endl
+		    	  	<< "-------------------------------------" << std::endl;
+
+		}
+		
+		break;
 
             case 2:
                 if (SIM())

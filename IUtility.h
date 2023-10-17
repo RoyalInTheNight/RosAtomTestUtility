@@ -42,7 +42,7 @@ namespace test {
         IUtility();
         IUtility(const std::string& name);
 
-        bool BIP();
+        void BIP();
         bool SIM();
         bool CAN();
 

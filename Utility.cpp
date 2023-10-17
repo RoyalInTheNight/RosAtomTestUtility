@@ -4,13 +4,13 @@
 #include "IUtility.h"
 
 #include <iostream>
-// #include <termios.h>
+#include <termios.h>
 #include <unistd.h>
 #include <csignal>
 #include <thread>
 #include <memory>
 
-/* int32_t getch() {
+int32_t getch() {
     struct termios oldattr, newattr;
     int32_t ch;
     tcgetattr(STDIN_FILENO, &oldattr);
@@ -20,7 +20,7 @@
     ch = getchar();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
     return ch;
-} */
+}
 
 void signal_handler(int signum) {
     switch (signum) {
@@ -121,8 +121,19 @@ void test::IUtility::BIP() {
     bool srv_pressed = false;
     int  sos_pressed = 0;
 
+    bool exit_pressed = false;
+
+    std::thread([&]() -> void {
+	char ch;
+
+	std::cin >> ch;
+
+	if (ch == 'x')
+	    exit_pressed = true;
+    }).detach();    
+
     while (true) {
-        if (std::stoi(pipe_exec("gpioget 3 8")) == 0) {
+        if (pipe_exec("gpioget 3 8") == "0\n") {
             std::cout << "Нажата кнопка SOS" << std::endl;
 
             ++sos_pressed;
@@ -143,11 +154,11 @@ void test::IUtility::BIP() {
                     std::cout << "[FAILED]Set gpio error" << std::endl;
             }
 
-            if (sos_pressed == 3)
-                sos_pressed = 1;
+            if (sos_pressed > 2)
+                sos_pressed = 0;
         }
 
-        if (std::stoi(pipe_exec("gpioget 3 9")) == 0) {
+        if (pipe_exec("gpioget 3 9") == "0\n") {
             std::cout << "Нажата кнопка SRV" << std::endl;
 
             srv_pressed = true;
@@ -157,6 +168,9 @@ void test::IUtility::BIP() {
                     std::cout << "[FAILED]Set gpio error" << std::endl;
             }
         }
+
+	if (exit_pressed)
+	    return;
     }
 }
 
@@ -296,8 +310,8 @@ bool test::IUtility::CAN() {
 void test::IUtility::menu() {
     signal(SIGINT, signal_handler);
 
-    std::thread(button_handler, button::BUTTON_SOS).detach();
-    std::thread(button_handler, button::BUTTON_SRV).detach();
+    // std::thread(button_handler, button::BUTTON_SOS).detach();
+    // std::thread(button_handler, button::BUTTON_SRV).detach();
 
     int pick_value     = 0;
     int pick_led_value = 0;

@@ -1,3 +1,0 @@
-/home/root/RosAtomTestUtility/CMakeFiles/test_utility.dir
-/home/root/RosAtomTestUtility/CMakeFiles/edit_cache.dir
-/home/root/RosAtomTestUtility/CMakeFiles/rebuild_cache.dir

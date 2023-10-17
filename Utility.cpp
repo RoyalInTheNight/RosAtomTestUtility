@@ -436,7 +436,7 @@ void test::IUtility::menu() {
                 break;
 
 	    case 5:
-		std::cout << "ЗАПУСК ETHERNET MULTIMEDIA" << std::endl;
+		std::cout << "ТЕСТ ETHERNET MULTIMEDIA" << std::endl;
 		break;
 
             default:

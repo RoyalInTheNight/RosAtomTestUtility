@@ -29,7 +29,7 @@ namespace test {
         std::string     path_sim_init_script;
         std::string            path_platform;
 
-	static void button_handler(const button&);
+	// static void button_handler(const button&);
 
     public:
         enum class BIP_mode
@@ -42,7 +42,7 @@ namespace test {
         IUtility();
         IUtility(const std::string& name);
 
-        bool BIP(const BIP_mode&, bool);
+        bool BIP();
         bool SIM();
         bool CAN();
 

@@ -269,6 +269,12 @@ bool test::IUtility::SIM() {
     if (system(path_sim_init_script.c_str())) {
         std::cout << "Command: " << path_sim_init_script << " error" << std::endl;
 
+	if (system("ifconfig eth0 up")) {
+	     std::cout << "eth0 error" << std::endl;
+
+	     return false;
+    	}
+
         return false;
     }
 

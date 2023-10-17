@@ -37,7 +37,9 @@ void signal_handler(int signum) {
     std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ" << std::endl
                   << "1. БИП"                << std::endl
                   << "2. SIM"                << std::endl
-                  << "3. CAN"                << std::endl
+	    	  << "3. ГИРОСКОП"           << std::endl
+                  << "4. CAN"                << std::endl
+	    	  << "5. ETHERNET MULTIMEDIA"<< std::endl
                   << "command> ";
 }
 
@@ -336,7 +338,9 @@ void test::IUtility::menu() {
         std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ" << std::endl
                   << "1. БИП"                << std::endl
                   << "2. SIM"                << std::endl
-                  << "3. CAN"                << std::endl
+		  << "3. ГИРОСКОП"	     << std::endl
+                  << "4. CAN"                << std::endl
+		  << "5. ETHERNET MULTIMEDIA"<< std::endl
                   << "command> ";
 
         std::cin >> pick_value;
@@ -419,7 +423,8 @@ void test::IUtility::menu() {
 
                 break;
 
-            case 3:
+	    case 3:break;
+            case 4:
                 std::thread([&]() -> void {
                     if (CAN())
                         std::cout << "CAN init success" << std::endl;
@@ -429,6 +434,10 @@ void test::IUtility::menu() {
                 }).detach();
 
                 break;
+
+	    case 5:
+		std::cout << "ЗАПУСК ETHERNET MULTIMEDIA" << std::endl;
+		break;
 
             default:
                 std::cout << "Unknown option" << std::endl;

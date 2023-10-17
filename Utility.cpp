@@ -49,7 +49,7 @@ test::IUtility::IUtility() {
     json config = {
             {"sos_path", "/usr/local/tools/led_sos.sh"},
             {"sim_path", "/usr/local/tools/init_sim7600.sh"},
-            {"plm_path", "~/KAMAz_PLATFORM-main/build/main -d"}
+            {"plm_path", "~/KAMAz_PLATFORM/build/main -d"}
     };
 
     for (auto& cfg : config.items()) {

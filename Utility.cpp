@@ -48,7 +48,7 @@ test::IUtility::IUtility() {
 
     json config = {
             {"sos_path", "/usr/local/tools/led_sos.sh"},
-            {"sim_path", "/usr/local/tools/init_sim7600H.sh"},
+            {"sim_path", "/usr/local/tools/init_sim7600.sh"},
             {"plm_path", "~/KAMAz_PLATFORM-main/build/main -d"}
     };
 
@@ -278,6 +278,12 @@ bool test::IUtility::SIM() {
         std::cout << "Modem iccid get error" << std::endl;
 
         return false;
+    }
+
+    if (system("ifconfig eth0 up")) {
+	std::cout << "eth0 error" << std::endl;
+
+	return false;
     }
 
     std::ofstream resolv("/etc/resolv.conf");

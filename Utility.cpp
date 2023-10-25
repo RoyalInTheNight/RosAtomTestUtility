@@ -312,12 +312,7 @@ bool test::IUtility::SIM() {
 }
 
 bool test::IUtility::CAN() {
-    if (system("rm /tmp/fota.sock")) {
-	std::cout << "Command: rm /tmp/fota.sock error" << std::endl;
-	    
-	return false;
-    }
-	
+    system("rm /tmp/fota.sock");
     if (system(path_platform.c_str())) {
         std::cout << "Command: " << path_platform << " error" << std::endl;
 

@@ -314,10 +314,15 @@ bool test::IUtility::SIM() {
 bool test::IUtility::CAN() {
     file_read fota_sock("/tmp/fota.sock");
 
-    if (fota_sock.fail())
+    if (!fota_sock.fail()) {
 	std::cout << "fota sock already deleted" << std::endl;
 
+	fota_sock.close();
+    }
+	    
     else {
+	fota_sock.close();
+	    
 	if (system("rm /tmp/fota.sock")) {
 	    std::cout << "fota.sock delete error" << std::endl;
 

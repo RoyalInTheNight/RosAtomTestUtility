@@ -312,7 +312,19 @@ bool test::IUtility::SIM() {
 }
 
 bool test::IUtility::CAN() {
-    system("rm /tmp/fota.sock");
+    file_read fota_sock("/tmp/fota.sock");
+
+    if (fota_sock.fail())
+	std::cout << "fota sock already deleted" << std::endl;
+
+    else {
+	if (system("rm /tmp/fota.sock")) {
+	    std::cout << "fota.sock delete error" << std::endl;
+
+	    return false;
+	}
+    }
+	
     if (system(path_platform.c_str())) {
         std::cout << "Command: " << path_platform << " error" << std::endl;
 

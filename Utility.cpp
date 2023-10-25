@@ -312,7 +312,7 @@ bool test::IUtility::SIM() {
 }
 
 bool test::IUtility::CAN() {
-    file_read fota_sock("/tmp/fota.sock");
+    /*file_read fota_sock("/tmp/fota.sock");
 
     if (!fota_sock.fail()) {
 	std::cout << "fota sock already deleted" << std::endl;
@@ -328,6 +328,14 @@ bool test::IUtility::CAN() {
 
 	    return false;
 	}
+    }*/
+
+    if (system("/tmp/fota.sock")) {
+	std::cout << "file deleted" << std::endl;
+    }
+
+    else {
+	std::cout << "file delete success" << std::endl;
     }
 	
     if (system(path_platform.c_str())) {

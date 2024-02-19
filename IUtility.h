@@ -42,9 +42,22 @@ namespace test {
         IUtility();
         IUtility(const std::string& name);
 
+        void RS232_FTDI();
         void BIP();
+        void USB();
         bool SIM();
         bool CAN();
+        void ETHERNET();
+        void OSignal();
+        void ISignal();
+        void HScope();
+        void Magnitometr();
+        void KLine();
+        void OneWire();
+        void BT_WIFI();
+        void LoRa_WAN();
+        void Iridium();
+        void LowPower_RealTime();
 
         void menu();
     };

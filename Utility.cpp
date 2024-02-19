@@ -3,12 +3,15 @@
 //
 #include "IUtility.h"
 
+#include <fstream>
 #include <iostream>
 #include <termios.h>
 #include <unistd.h>
 #include <csignal>
 #include <thread>
 #include <memory>
+
+#include "../RSXXX_FTDI_Serial.h"
 
 int32_t getch() {
     struct termios oldattr, newattr;
@@ -34,12 +37,23 @@ void signal_handler(int signum) {
 	    break;
     }
 
-    std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ" << std::endl
-                  << "1. БИП"                << std::endl
-                  << "2. SIM"                << std::endl
-	    	  << "3. ГИРОСКОП"           << std::endl
-                  << "4. CAN"                << std::endl
-	    	  << "5. ETHERNET MULTIMEDIA"<< std::endl
+    std::cout     << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ"   << std::endl
+                  << "1.  БИП"                 << std::endl
+                  << "2.  SIM"                 << std::endl
+	    	      << "3.  ГИРОСКОП"            << std::endl
+                  << "4.  CAN"                 << std::endl
+	    	      << "5.  ETHERNET MULTIMEDIA" << std::endl
+                  << "6.  RS232 FTDI"          << std::endl
+                  << "7.  USB"                 << std::endl
+                  << "8.  Output signal"       << std::endl
+                  << "9.  Input signal"        << std::endl
+                  << "10. Magnitometr"         << std::endl
+                  << "11. K-Line"              << std::endl
+                  << "12. OneWire"             << std::endl
+                  << "13. Bluetooth & WIFI"    << std::endl
+                  << "14. LoRa WAN"            << std::endl
+                  << "15. Iridium"             << std::endl
+                  << "16. LowPower & RealTime" << std::endl
                   << "command> ";
 }
 
@@ -355,18 +369,38 @@ void test::IUtility::menu() {
 
     int pick_value     = 0;
     int pick_led_value = 0;
+    int rs_peak        = 0;
 
     bool led_red   = false;
     bool led_green = false;
     bool led_srv   = false;
 
+    std::ofstream  input_rs;
+    std::ifstream output_rs;
+
+    std::string rsXXX;
+    std::string message_read;
+
+    RS232_1 ftdi;
+
     while (true) {
-        std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ" << std::endl
-                  << "1. БИП"                << std::endl
-                  << "2. SIM"                << std::endl
-		  << "3. ГИРОСКОП"	     << std::endl
-                  << "4. CAN"                << std::endl
-		  << "5. ETHERNET MULTIMEDIA"<< std::endl
+        std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ"   << std::endl
+                  << "1.  БИП"                 << std::endl
+                  << "2.  SIM"                 << std::endl
+	    	      << "3.  ГИРОСКОП"            << std::endl
+                  << "4.  CAN"                 << std::endl
+	    	      << "5.  ETHERNET MULTIMEDIA" << std::endl
+                  << "6.  RS232 FTDI"          << std::endl
+                  << "7.  USB"                 << std::endl
+                  << "8.  Output signal"       << std::endl
+                  << "9.  Input signal"        << std::endl
+                  << "10. Magnitometr"         << std::endl
+                  << "11. K-Line"              << std::endl
+                  << "12. OneWire"             << std::endl
+                  << "13. Bluetooth & WIFI"    << std::endl
+                  << "14. LoRa WAN"            << std::endl
+                  << "15. Iridium"             << std::endl
+                  << "16. LowPower & RealTime" << std::endl
                   << "command> ";
 
         std::cin >> pick_value;
@@ -449,7 +483,7 @@ void test::IUtility::menu() {
 
                 break;
 
-	    case 3:break;
+	        case 3:break;
             case 4:
                 std::thread([&]() -> void {
                     if (CAN())
@@ -461,9 +495,104 @@ void test::IUtility::menu() {
 
                 break;
 
-	    case 5:
-		std::cout << "ТЕСТ ETHERNET MULTIMEDIA" << std::endl;
-		break;
+	        case 5:
+		        std::cout << "ТЕСТ ETHERNET MULTIMEDIA" << std::endl;
+		    break;
+
+            case 6:
+                system("clear");
+
+                std::cout << "1 - RS232.1" << std::endl
+                          << "2 - RS232.2" << std::endl
+                          << "3 - RS485"   << std::endl
+                          << "rs-peak>";
+
+                rs_peak = 0;
+
+                std::cin >> rs_peak;
+
+                switch (rs_peak) {
+                    case 1:
+                        while (true) {
+                            system("clear");
+
+                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+                                      << "input:  " << std::endl
+                                      << "output: " << std::endl
+                                      << "recv:   " << std::endl;
+                            std::cout << "       \033[3A";
+                            std::cin >> rsXXX;
+
+                            system("clear");
+
+                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+                                      << "input:  " << std::endl
+                                      << "output: " << std::endl
+                                      << "recv:   " << std::endl;
+                            std::cout << "        \033[2A" << rsXXX;
+
+                            if (ftdi.FTDI_SetDevice("/dev/ttyUSB0") == RS232_1::FTDI_Errno::FTDI_SetDeviceError)
+                                std::cout << "[ERROR]Device don't set" << std::endl;
+
+                            if (ftdi.FTDI_Open() == RS232_1::FTDI_Errno::FTDI_OpenError)
+                                std::cout << "[ERROR]FTDI open error" << std::endl;
+
+                            if (ftdi.FTDI_TC_GetAttributeTTY() == RS232_1::FTDI_Errno::FTDI_TTY_GetAttributeError)
+                                std::cout << "[ERROR]FTDI get attriibute TTY error" << std::endl;
+                            
+                            ftdi.FTDI_SetTTY_C_CFLAG(~PARENB,  ~CSTOPB,         ~CSIZE,
+                                                         CS8, ~CRTSCTS, CREAD | CLOCAL);
+
+                            ftdi.FTDI_SetTTY_C_LFLAG(~ICANON, ~ECHO, ~ECHOE, 
+                                                     ~ECHONL, ~ISIG);
+
+                            ftdi.FTDI_SetTTY_C_IFLAG(~(IXON   | IXOFF  | IXANY),
+                                                     ~(IGNBRK | BRKINT | PARMRK |
+                                                       ISTRIP | INLCR  | IGNCR  | ICRNL));
+
+                            ftdi.FTDI_SetTTY_C_OFLAG(~OPOST, ~ONLCR);
+                            ftdi.FTDI_SetTTY_C_CC(VTIME, VMIN,
+                                                  10,    0    );
+
+                            ftdi.FTDI_CF_SetInput_SPEED (B115200);
+                            ftdi.FTDI_CF_SetOutput_SPEED(B115200);
+
+                            if (ftdi.FTDI_WriteBuffer(rsXXX) == RS232_1::FTDI_Errno::FTDI_WriteMessageError)
+                                std::cout << "[ERROR]FTDI write buffer error" << std::endl;
+
+                            message_read = ftdi.FTDI_ReadBuffer();
+                            // if (!message_read.size())
+                            //     std::cout << "[ERROR]FTDI message read empty" << std::endl;
+
+                            system("clear");
+
+                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+                                      << "input:  " << std::endl
+                                      << "output: " << std::endl
+                                      << "recv:   " << std::endl;
+                            std::cout << "      \033[1A" << message_read;
+
+                            std::cin >> rsXXX;
+                        }
+
+                        break;
+
+                        case 2:
+                            std::cout << "RS232.2 " << std::endl
+                                      << "input:  " << std::endl
+                                      << "output: " << std::endl
+                                      << "recv:   " << std::endl;
+                        break;
+
+                        case 3:
+                            std::cout << "RS485   " << std::endl
+                                      << "input:  " << std::endl
+                                      << "output: " << std::endl
+                                      << "recv:   " << std::endl;
+                        break;
+                }
+
+                break;
 
             default:
                 std::cout << "Unknown option" << std::endl;

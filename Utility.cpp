@@ -197,97 +197,6 @@ void test::IUtility::BIP() {
     }
 }
 
-/*void test::IUtility::button_handler(const button& btn) {
-    auto pipe_exec = [&](const char *cmd) -> std::string {
-	    if (cmd == nullptr)
-	        return "";
-
-    	std::array<char, 128> buff;
-	    std::string result;
-
-    	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-
-	    if (!pipe) return "";
-
-	    while (fgets(buff.data(), buff.size(), pipe.get()) != nullptr)
-	        result += buff.data();;
-
-	    return result;
-    };
-
-    bool srv_pressed = false;
-    bool sos_pressed = false;
-
-    while (true) {
-    	if (btn == button::BUTTON_SOS) {
-            if (std::stoi(pipe_exec("gpioget 3 8")) == 1) {
-                if (srv_pressed)
-                    std::cout << "[ INFO ]Button sos unpressed" << std::endl;
-
-                srv_pressed = false;
-            }
-
-            if (std::stoi(pipe_exec("gpioget 3 8")) == 0) {
-                if (!srv_pressed)
-                    std::cout << "[ INFO ]Button sos pressed" << std::endl;
-
-                srv_pressed = true;
-            }
-        }
-
-    	if (btn == button::BUTTON_SRV) {
-            if (std::stoi(pipe_exec("gpioget 3 9")) == 1) {
-                if (sos_pressed)
-                    std::cout << "[ INFO ]Button srv unpressed" << std::endl;
-
-                sos_pressed = false;
-            }
-
-            if (std::stoi(pipe_exec("gpioget 3 9")) == 0) {
-                if (!sos_pressed)
-                    std::cout << "[ INFO ]Button srv pressed" << std::endl;
-
-                sos_pressed = true;
-            }
-        }
-    }
-}*/
-
-/*bool test::IUtility::BIP(const test::IUtility::BIP_mode& mode, bool led) {
-    std::string path = path_sos_led_script;
-
-    if (mode == BIP_mode::LED_SOS_RED) {
-        path = path_sos_led_script + " red";
-	
-	if (led)
-	    path += " 1";
-    }
-
-    if (mode == BIP_mode::LED_SOS_GREEN) {
-        path = path_sos_led_script + " green";
-
-        if (led)
-            path += " 1";
-    }
-
-    if (mode == BIP_mode::LED_SRV) {
-        path = path_sos_led_script + " srv";
-
-        if (led)
-            path += " 1";
-    }
-
-    if (system(path.c_str())) {
-        std::cout << "Command: " << path << " error" << std::endl;
-
-        return false;
-    }
-
-    std::cout << "Led ok..." << std::endl;
-
-    return true;
-}*/
-
 bool test::IUtility::SIM() {
     if (system(path_sim_init_script.c_str())) {
         std::cout << "Command: " << path_sim_init_script << " error" << std::endl;
@@ -333,24 +242,6 @@ bool test::IUtility::SIM() {
 }
 
 bool test::IUtility::CAN() {
-    /*file_read fota_sock("/tmp/fota.sock");
-
-    if (!fota_sock.fail()) {
-	std::cout << "fota sock already deleted" << std::endl;
-
-	fota_sock.close();
-    }
-	    
-    else {
-	fota_sock.close();
-	    
-	if (system("rm /tmp/fota.sock")) {
-	    std::cout << "fota.sock delete error" << std::endl;
-
-	    return false;
-	}
-    }*/
-
     if (system("/tmp/fota.sock")) {
 	std::cout << "file deleted" << std::endl;
     }
@@ -370,9 +261,6 @@ bool test::IUtility::CAN() {
 
 void test::IUtility::menu() {
     signal(SIGINT, signal_handler);
-
-    // std::thread(button_handler, button::BUTTON_SOS).detach();
-    // std::thread(button_handler, button::BUTTON_SRV).detach();
 
     int pick_value     = 0;
     int pick_led_value = 0;
@@ -396,69 +284,6 @@ void test::IUtility::menu() {
 
         switch (pick_value) {
             case 2:
-                /*while (true) {
-                    std::cout << "1. LED_SOS_RED" << std::endl
-                              << "2. LED_SOS_GREEN" << std::endl
-                              << "3. LED_SRV" << std::endl
-                              << "4. EXIT" << std::endl
-                              << "led_commmand> ";
-
-                    std::cin >> pick_led_value;
-
-                    if (pick_led_value == 1) {
-                        if (led_red == false)
-                            led_red = true;
-
-                        else
-                            led_red = false;
-
-                        if (BIP(BIP_mode::LED_SOS_RED, led_red))
-                            std::cout << "Led red pick success" << std::endl;
-
-                        else
-                            std::cout << "Led red pick failed" << std::endl;
-                    } else if (pick_led_value == 2) {
-                        if (led_green == false)
-                            led_green = true;
-
-                        else
-                            led_green = false;
-
-                        if (BIP(BIP_mode::LED_SOS_GREEN, led_green))
-                            std::cout << "Led green pick failed" << std::endl;
-
-                        else
-                            std::cout << "Led green pick failed" << std::endl;
-                    } else if (pick_led_value == 3) {
-                        if (led_srv == false)
-                            led_srv = true;
-
-                        else
-                            led_srv = false;
-
-                        if (BIP(BIP_mode::LED_SRV, led_srv))
-                            std::cout << "Led srv pick failed" << std::endl;
-
-                        else
-                            std::cout << "Led srv pick failed" << std::endl;
-                    } else if (pick_led_value == 4) {
-                        break;
-                    } else
-                        std::cout << "Unknown led" << std::endl;
-
-                    // break;
-
-                    std::cout << "_____________________________________" << std::endl;
-                    std::cout << "|led_red|led_green|led_srv|   pick  |" << std::endl;
-                    std::cout << "|_______|_________|_______|_________|" << std::endl
-                              << "|   " << led_red
-                              << "   |    " << led_green
-                              << "    |   " << led_srv
-                              << "   |    " << pick_led_value << "    |" << std::endl
-                              << "-------------------------------------" << std::endl;
-
-                }*/
-
                 BIP();
 
                 break;
@@ -551,8 +376,6 @@ void test::IUtility::menu() {
                                 std::cout << "[ERROR]FTDI write buffer error" << std::endl;
 
                             message_read = ftdi.FTDI_ReadBuffer();
-                            // if (!message_read.size())
-                            //     std::cout << "[ERROR]FTDI message read empty" << std::endl;
 
                             system("clear");
 

@@ -11,7 +11,7 @@
 #include <thread>
 #include <memory>
 
-#include "../RSXXX_FTDI_Serial.h"
+#include "RSXXX_FTDI_Serial.h"
 
 int32_t getch() {
     struct termios oldattr, newattr;
@@ -23,6 +23,31 @@ int32_t getch() {
     ch = getchar();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
     return ch;
+}
+
+void main_menu() {
+    std::cout     << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ"                << std::endl
+                  << "1.  RS232 RS485"                      << std::endl
+                  << "2.  БИП"                              << std::endl
+	    	      << "3.  USB"                              << std::endl
+                  << "4.  SIM"                              << std::endl
+	    	      << "5.  ETHERNET AUTOMOTIVE"              << std::endl
+                  << "6.  Контроллер АКБ"                   << std::endl
+                  << "7.  Выходные сигналы"                 << std::endl
+                  << "8.  Входные сигналы"                  << std::endl
+                  << "9.  Гироскоп"                         << std::endl
+                  << "10. Магнитометр"                      << std::endl
+                  << "11. K-Line"                           << std::endl
+                  << "12. OneWire"                          << std::endl
+                  << "13. Bluetooth & WIFI"                 << std::endl
+                  << "14. LoRa WAN"                         << std::endl
+                  << "15. Iridium"                          << std::endl
+                  << "16. CAN"                              << std::endl
+                  << "17. ETHERNET MULTIMEDIA"              << std::endl
+                  << "18. RTC"                              << std::endl
+                  << "19. GNSS"                             << std::endl
+                  << "20. Проверка часов реального времени" << std::endl
+                  << "command> ";
 }
 
 void signal_handler(int signum) {
@@ -37,24 +62,7 @@ void signal_handler(int signum) {
 	    break;
     }
 
-    std::cout     << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ"   << std::endl
-                  << "1.  БИП"                 << std::endl
-                  << "2.  SIM"                 << std::endl
-	    	      << "3.  ГИРОСКОП"            << std::endl
-                  << "4.  CAN"                 << std::endl
-	    	      << "5.  ETHERNET MULTIMEDIA" << std::endl
-                  << "6.  RS232 FTDI"          << std::endl
-                  << "7.  USB"                 << std::endl
-                  << "8.  Output signal"       << std::endl
-                  << "9.  Input signal"        << std::endl
-                  << "10. Magnitometr"         << std::endl
-                  << "11. K-Line"              << std::endl
-                  << "12. OneWire"             << std::endl
-                  << "13. Bluetooth & WIFI"    << std::endl
-                  << "14. LoRa WAN"            << std::endl
-                  << "15. Iridium"             << std::endl
-                  << "16. LowPower & RealTime" << std::endl
-                  << "command> ";
+    main_menu();
 }
 
 test::IUtility::IUtility() {
@@ -384,29 +392,11 @@ void test::IUtility::menu() {
     RS232_1 ftdi;
 
     while (true) {
-        std::cout << "ТЕХНОЛОГИЧЕСКИЙ РЕЖИМ"   << std::endl
-                  << "1.  БИП"                 << std::endl
-                  << "2.  SIM"                 << std::endl
-	    	      << "3.  ГИРОСКОП"            << std::endl
-                  << "4.  CAN"                 << std::endl
-	    	      << "5.  ETHERNET MULTIMEDIA" << std::endl
-                  << "6.  RS232 FTDI"          << std::endl
-                  << "7.  USB"                 << std::endl
-                  << "8.  Output signal"       << std::endl
-                  << "9.  Input signal"        << std::endl
-                  << "10. Magnitometr"         << std::endl
-                  << "11. K-Line"              << std::endl
-                  << "12. OneWire"             << std::endl
-                  << "13. Bluetooth & WIFI"    << std::endl
-                  << "14. LoRa WAN"            << std::endl
-                  << "15. Iridium"             << std::endl
-                  << "16. LowPower & RealTime" << std::endl
-                  << "command> ";
-
+        main_menu();
         std::cin >> pick_value;
 
         switch (pick_value) {
-            case 1:
+            case 2:
                 /*while (true) {
                     std::cout << "1. LED_SOS_RED" << std::endl
                               << "2. LED_SOS_GREEN" << std::endl
@@ -474,7 +464,7 @@ void test::IUtility::menu() {
 
                 break;
 
-            case 2:
+            case 4:
                 if (SIM())
                     std::cout << "SIM init success" << std::endl;
 
@@ -484,7 +474,7 @@ void test::IUtility::menu() {
                 break;
 
 	        case 3:break;
-            case 4:
+            case 16:
                 std::thread([&]() -> void {
                     if (CAN())
                         std::cout << "CAN init success" << std::endl;
@@ -495,14 +485,15 @@ void test::IUtility::menu() {
 
                 break;
 
-	        case 5:
+	        case 17:
 		        std::cout << "ТЕСТ ETHERNET MULTIMEDIA" << std::endl;
 		    break;
 
-            case 6:
+            case 1:
                 system("clear");
 
-                std::cout << "1 - RS232.1" << std::endl
+                std::cout << "Введите номер тестируемого интерфейса и нажмите Enter:"
+                          << "1 - RS232.1" << std::endl
                           << "2 - RS232.2" << std::endl
                           << "3 - RS485"   << std::endl
                           << "rs-peak>";
@@ -517,18 +508,18 @@ void test::IUtility::menu() {
                             system("clear");
 
                             std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
-                                      << "input:  " << std::endl
-                                      << "output: " << std::endl
-                                      << "recv:   " << std::endl;
+                                      << "ввод:  "      << std::endl
+                                      << "отправлено: " << std::endl
+                                      << "принято:   "  << std::endl;
                             std::cout << "       \033[3A";
                             std::cin >> rsXXX;
 
                             system("clear");
 
                             std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
-                                      << "input:  " << std::endl
-                                      << "output: " << std::endl
-                                      << "recv:   " << std::endl;
+                                      << "ввод:  "      << std::endl
+                                      << "отправлено: " << std::endl
+                                      << "принято:   "  << std::endl;
                             std::cout << "        \033[2A" << rsXXX;
 
                             if (ftdi.FTDI_SetDevice("/dev/ttyUSB0") == RS232_1::FTDI_Errno::FTDI_SetDeviceError)
@@ -567,10 +558,12 @@ void test::IUtility::menu() {
                             system("clear");
 
                             std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
-                                      << "input:  " << std::endl
-                                      << "output: " << std::endl
-                                      << "recv:   " << std::endl;
+                                      << "ввод:  "      << std::endl
+                                      << "отправлено: " << std::endl
+                                      << "принято:   "  << std::endl;
                             std::cout << "      \033[1A" << message_read;
+
+                            message_read.clear();
 
                             std::cin >> rsXXX;
                         }
@@ -578,17 +571,17 @@ void test::IUtility::menu() {
                         break;
 
                         case 2:
-                            std::cout << "RS232.2 " << std::endl
-                                      << "input:  " << std::endl
-                                      << "output: " << std::endl
-                                      << "recv:   " << std::endl;
+                            std::cout << "<-=====-RS232.2-=====->" << std::endl
+                                      << "ввод:  "      << std::endl
+                                      << "отправлено: " << std::endl
+                                      << "принято:   "  << std::endl;
                         break;
 
                         case 3:
-                            std::cout << "RS485   " << std::endl
-                                      << "input:  " << std::endl
-                                      << "output: " << std::endl
-                                      << "recv:   " << std::endl;
+                            std::cout << "<-=====-RS485-=====->" << std::endl
+                                      << "ввод:  "      << std::endl
+                                      << "отправлено: " << std::endl
+                                      << "принято:   "  << std::endl;
                         break;
                 }
 

@@ -32,21 +32,20 @@ void main_menu() {
 	    	      << "3.  USB"                              << std::endl
                   << "4.  SIM"                              << std::endl
 	    	      << "5.  ETHERNET AUTOMOTIVE"              << std::endl
-                  << "6.  Контроллер АКБ"                   << std::endl
-                  << "7.  Выходные сигналы"                 << std::endl
-                  << "8.  Входные сигналы"                  << std::endl
-                  << "9.  Гироскоп"                         << std::endl
-                  << "10. Магнитометр"                      << std::endl
+                  << "6.  КОНТРОЛЛЕР АКБ"                   << std::endl
+                  << "7.  ВЫХОДНЫЕ СИГНАЛЫ"                 << std::endl
+                  << "8.  ВХОДНЫЕ СИГНАЛЫ"                  << std::endl
+                  << "9.  ГИРОСКОП"                         << std::endl
+                  << "10. МАГНИТОМЕТР"                      << std::endl
                   << "11. K-Line"                           << std::endl
                   << "12. OneWire"                          << std::endl
                   << "13. Bluetooth & WIFI"                 << std::endl
                   << "14. LoRa WAN"                         << std::endl
-                  << "15. Iridium"                          << std::endl
+                  << "15. IRIDIUM"                          << std::endl
                   << "16. CAN"                              << std::endl
                   << "17. ETHERNET MULTIMEDIA"              << std::endl
                   << "18. RTC"                              << std::endl
                   << "19. GNSS"                             << std::endl
-                  << "20. Проверка часов реального времени" << std::endl
                   << "command> ";
 }
 

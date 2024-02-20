@@ -3,6 +3,8 @@
 //
 #include "IUtility.h"
 
+#include <cstddef>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <termios.h>
@@ -259,6 +261,11 @@ bool test::IUtility::CAN() {
     return true;
 }
 
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <unistd.h>
+
 void test::IUtility::menu() {
     signal(SIGINT, signal_handler);
 
@@ -277,6 +284,18 @@ void test::IUtility::menu() {
     std::string message_read;
 
     RS232_1 ftdi;
+
+    sockaddr_in server_ethernet_multimedia;
+    sockaddr_in host_local_ip_address;
+    socklen_t   host_local_len = sizeof(host_local_ip_address);
+    int         socket_server_dns;
+    char        buffer_ip[100];
+    char *      point;
+
+    uint16_t    dns_port   = 53;
+    std::string dns_server = "8.8.8.8";
+
+    std::string anykey;
 
     while (true) {
         main_menu();
@@ -310,13 +329,58 @@ void test::IUtility::menu() {
                 break;
 
 	        case 17:
-		        std::cout << "ТЕСТ ETHERNET MULTIMEDIA" << std::endl;
+                system("clear");
+
+                socket_server_dns = ::socket(AF_INET, SOCK_DGRAM, 0);
+
+                if (socket_server_dns < 0) {
+                    std::cout << "AF_INET suport fail" << std::endl;
+                    
+                    break;
+                }
+
+                memset(&server_ethernet_multimedia, 0, sizeof(server_ethernet_multimedia));
+                server_ethernet_multimedia.sin_addr.s_addr = inet_addr(dns_server.c_str());
+                server_ethernet_multimedia.sin_port        = htons(dns_port);
+                server_ethernet_multimedia.sin_family      = AF_INET;
+
+                if (connect(socket_server_dns, (const sockaddr *)&server_ethernet_multimedia, sizeof(server_ethernet_multimedia)) < 0) {
+                    std::cout << "Connect to dns failed" << std::endl;
+
+                    break;
+                }
+
+                if (getsockname(socket_server_dns, (sockaddr *)&host_local_ip_address, &host_local_len) < 0) {
+                    std::cout << "Get local address failed" <<  std::endl;
+
+                    break;
+                }
+
+                point = (char *)inet_ntop(AF_INET, &host_local_ip_address.sin_addr, buffer_ip, 100);
+
+                if (point != NULL) {
+                    std::cout << "IP-адрес БТП "  << buffer_ip << std::endl;
+                    std::cout << "Выполните команду 'ping " << buffer_ip  << "' в командной строке данного ПК." << std::endl;
+                }
+
+                else {
+                    std::cout << "Operation failed" << std::endl;
+                    
+                    break;
+                }
+
+                close(socket_server_dns);
+
+                std::cout << "socket closed, dns server " << dns_server << ":" << dns_port << " incative" << std::endl;
+
+                std::cin >> anykey;
+
 		    break;
 
             case 1:
                 system("clear");
 
-                std::cout << "Введите номер тестируемого интерфейса и нажмите Enter:"
+                std::cout << "Введите номер тестируемого интерфейса и нажмите Enter:" << std::endl
                           << "1 - RS232.1" << std::endl
                           << "2 - RS232.2" << std::endl
                           << "3 - RS485"   << std::endl
@@ -344,7 +408,7 @@ void test::IUtility::menu() {
                                       << "ввод:  "      << std::endl
                                       << "отправлено: " << std::endl
                                       << "принято:   "  << std::endl;
-                            std::cout << "        \033[2A" << rsXXX;
+                            std::cout << "             \033[2A" << rsXXX;
 
                             if (ftdi.FTDI_SetDevice("/dev/ttyUSB0") == RS232_1::FTDI_Errno::FTDI_SetDeviceError)
                                 std::cout << "[ERROR]Device don't set" << std::endl;
@@ -377,13 +441,15 @@ void test::IUtility::menu() {
 
                             message_read = ftdi.FTDI_ReadBuffer();
 
+                            rsXXX.clear();
+                            rsXXX = "";
+
                             system("clear");
 
                             std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
                                       << "ввод:  "      << std::endl
                                       << "отправлено: " << std::endl
-                                      << "принято:   "  << std::endl;
-                            std::cout << "      \033[1A" << message_read;
+                                      << "принято:   "  << message_read << std::endl;
 
                             message_read.clear();
 

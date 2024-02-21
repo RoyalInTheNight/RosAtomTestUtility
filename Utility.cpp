@@ -4,6 +4,7 @@
 #include "IUtility.h"
 
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -265,6 +266,7 @@ bool test::IUtility::CAN() {
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <thread>
 
 void test::IUtility::menu() {
     signal(SIGINT, signal_handler);
@@ -296,6 +298,9 @@ void test::IUtility::menu() {
     std::string dns_server = "8.8.8.8";
 
     std::string anykey;
+
+    std::string rsOUT;
+    std::string rsDNT;
 
     while (true) {
         main_menu();
@@ -392,68 +397,70 @@ void test::IUtility::menu() {
 
                 switch (rs_peak) {
                     case 1:
+                        if (ftdi.FTDI_SetDevice("/dev/ttyUSB3") == RS232_1::FTDI_Errno::FTDI_SetDeviceError)
+                            std::cout << "[ERROR]Device don't set" << std::endl;
+
+                        if (ftdi.FTDI_Open() == RS232_1::FTDI_Errno::FTDI_OpenError)
+                            std::cout << "[ERROR]FTDI open error" << std::endl;
+
+                        if (ftdi.FTDI_TC_GetAttributeTTY() == RS232_1::FTDI_Errno::FTDI_TTY_GetAttributeError)
+                            std::cout << "[ERROR]FTDI get attriibute TTY error" << std::endl;
+                            
+                        ftdi.FTDI_SetTTY_C_CFLAG(~PARENB,  ~CSTOPB,         ~CSIZE,
+                                                     CS8, ~CRTSCTS, CREAD | CLOCAL);
+
+                        ftdi.FTDI_SetTTY_C_LFLAG(~ICANON, ~ECHO, ~ECHOE, 
+                                                 ~ECHONL, ~ISIG);
+
+                        ftdi.FTDI_SetTTY_C_IFLAG(~(IXON   | IXOFF  | IXANY),
+                                                 ~(IGNBRK | BRKINT | PARMRK |
+                                                   ISTRIP | INLCR  | IGNCR  | ICRNL));
+
+                        ftdi.FTDI_SetTTY_C_OFLAG(~OPOST, ~ONLCR);
+                        ftdi.FTDI_SetTTY_C_CC(VTIME, VMIN,
+                                              10,    0    );
+
+                        ftdi.FTDI_CF_SetInput_SPEED (B115200);
+                        ftdi.FTDI_CF_SetOutput_SPEED(B115200);
+
+                        std::thread([&](){
+                            while (true) {
+                                message_read = ftdi.FTDI_ReadBuffer();
+
+                                // std::cout << "     \033[1A" << message_read;
+
+                                system("clear");
+
+                                if (!rsXXX.empty()) {
+                                    std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+                                             << "ввод:  "      << std::endl
+                                             << "отправлено: " << rsXXX        << std::endl
+                                             << "принято:   "  << message_read << std::endl;
+                                }
+
+                                else {
+                                    std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+                                                 << "ввод:  "      << std::endl
+                                                 << "отправлено: " << std::endl
+                                                 << "принято:   "  << message_read << std::endl;
+                                }
+                            }
+                        }).detach();
+
                         while (true) {
                             system("clear");
 
                             std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
                                       << "ввод:  "      << std::endl
                                       << "отправлено: " << std::endl
-                                      << "принято:   "  << std::endl;
-                            std::cout << "       \033[3A";
-                            std::cin >> rsXXX;
-
-                            system("clear");
-
-                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
-                                      << "ввод:  "      << std::endl
-                                      << "отправлено: " << std::endl
-                                      << "принято:   "  << std::endl;
-                            std::cout << "             \033[2A" << rsXXX;
-
-                            if (ftdi.FTDI_SetDevice("/dev/ttyUSB0") == RS232_1::FTDI_Errno::FTDI_SetDeviceError)
-                                std::cout << "[ERROR]Device don't set" << std::endl;
-
-                            if (ftdi.FTDI_Open() == RS232_1::FTDI_Errno::FTDI_OpenError)
-                                std::cout << "[ERROR]FTDI open error" << std::endl;
-
-                            if (ftdi.FTDI_TC_GetAttributeTTY() == RS232_1::FTDI_Errno::FTDI_TTY_GetAttributeError)
-                                std::cout << "[ERROR]FTDI get attriibute TTY error" << std::endl;
-                            
-                            ftdi.FTDI_SetTTY_C_CFLAG(~PARENB,  ~CSTOPB,         ~CSIZE,
-                                                         CS8, ~CRTSCTS, CREAD | CLOCAL);
-
-                            ftdi.FTDI_SetTTY_C_LFLAG(~ICANON, ~ECHO, ~ECHOE, 
-                                                     ~ECHONL, ~ISIG);
-
-                            ftdi.FTDI_SetTTY_C_IFLAG(~(IXON   | IXOFF  | IXANY),
-                                                     ~(IGNBRK | BRKINT | PARMRK |
-                                                       ISTRIP | INLCR  | IGNCR  | ICRNL));
-
-                            ftdi.FTDI_SetTTY_C_OFLAG(~OPOST, ~ONLCR);
-                            ftdi.FTDI_SetTTY_C_CC(VTIME, VMIN,
-                                                  10,    0    );
-
-                            ftdi.FTDI_CF_SetInput_SPEED (B115200);
-                            ftdi.FTDI_CF_SetOutput_SPEED(B115200);
-
-                            if (ftdi.FTDI_WriteBuffer(rsXXX) == RS232_1::FTDI_Errno::FTDI_WriteMessageError)
-                                std::cout << "[ERROR]FTDI write buffer error" << std::endl;
-
-                            message_read = ftdi.FTDI_ReadBuffer();
-
-                            rsXXX.clear();
-                            rsXXX = "";
-
-                            system("clear");
-
-                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
-                                      << "ввод:  "      << std::endl
-                                      << "отправлено: " << std::endl
-                                      << "принято:   "  << message_read << std::endl;
-
-                            message_read.clear();
+                                      << "принято:   "  << std::endl << "      \033[3A";
 
                             std::cin >> rsXXX;
+
+                            ftdi.FTDI_WriteBuffer(rsXXX);
+
+                            if (rsXXX == "exit")
+                                break;
                         }
 
                         break;

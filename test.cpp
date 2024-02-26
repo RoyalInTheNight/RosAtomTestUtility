@@ -1,0 +1,11 @@
+#include "GCI.h"
+
+int main() {
+    GCI_RosAtomFTDI gci;
+
+    gci.addObject(0xa1, 0xa8, 0xa9, "<-===-RS232.1-===->", 0xfc, 0xfe);
+    gci.addObject(0xa2, 0xa8, 0xa9, "input_label", 0xfc, 0xff);
+    gci.addObject(0xa3, 0xa8, 0xa9, "string_label", 0xfc, 0xff);
+
+    gci.print();
+}

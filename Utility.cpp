@@ -457,6 +457,13 @@ void test::IUtility::menu() {
 
                             std::cin >> rsXXX;
 
+                            system("clear");
+
+                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+                                      << "ввод:  "      << std::endl
+                                      << "отправлено: " << rsXXX << std::endl
+                                      << "принято:   "  << std::endl;
+
                             ftdi.FTDI_WriteBuffer(rsXXX);
 
                             if (rsXXX == "exit")

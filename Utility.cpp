@@ -302,6 +302,8 @@ void test::IUtility::menu() {
     std::string rsOUT;
     std::string rsDNT;
 
+    std::string rsSended;
+
     while (true) {
         main_menu();
         std::cin >> pick_value;
@@ -389,7 +391,7 @@ void test::IUtility::menu() {
                           << "1 - RS232.1" << std::endl
                           << "2 - RS232.2" << std::endl
                           << "3 - RS485"   << std::endl
-                          << "rs-peak>";
+                          << "rs-peak> ";
 
                 rs_peak = 0;
 
@@ -397,7 +399,7 @@ void test::IUtility::menu() {
 
                 switch (rs_peak) {
                     case 1:
-                        if (ftdi.FTDI_SetDevice("/dev/ttyUSB3") == RS232_1::FTDI_Errno::FTDI_SetDeviceError)
+                        if (ftdi.FTDI_SetDevice("/dev/ttyUSB0") == RS232_1::FTDI_Errno::FTDI_SetDeviceError)
                             std::cout << "[ERROR]Device don't set" << std::endl;
 
                         if (ftdi.FTDI_Open() == RS232_1::FTDI_Errno::FTDI_OpenError)
@@ -435,34 +437,48 @@ void test::IUtility::menu() {
                                     std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
                                              << "ввод:  "      << std::endl
                                              << "отправлено: " << rsXXX        << std::endl
-                                             << "принято:   "  << message_read << std::endl;
+                                             << "принято:   "  << message_read << std::endl << "      \033[4A";
                                 }
 
                                 else {
                                     std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
                                                  << "ввод:  "      << std::endl
                                                  << "отправлено: " << std::endl
-                                                 << "принято:   "  << message_read << std::endl;
+                                                 << "принято:   "  << message_read << std::endl << "      \033[4A";
                                 }
+
+				message_read = "";
                             }
                         }).detach();
 
                         while (true) {
                             system("clear");
 
-                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
-                                      << "ввод:  "      << std::endl
-                                      << "отправлено: " << std::endl
-                                      << "принято:   "  << std::endl << "      \033[3A";
+			    if (rsSended.empty()) {
+                                std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+                                          << "ввод:  "      << std::endl
+                                          << "отправлено: " << std::endl
+                                          << "принято:   "  << std::endl << "      \033[3A";
+                            }
+
+			    else {
+			    	std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+					  << "ввод:  "      << std::endl
+				      	  << "отправлено: " << rsSended << std::endl
+				          << "принято:   "  << std::endl << "      \033[3A";
+			    }
 
                             std::cin >> rsXXX;
+			    rsSended  = rsXXX;
 
-                            system("clear");
+			    rsXXX = "";
 
-                            std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
-                                      << "ввод:  "      << std::endl
-                                      << "отправлено: " << rsXXX << std::endl
-                                      << "принято:   "  << std::endl;
+			    system("clear");
+
+			    // std::cout << "<-=====-RS232.1-=====->" << std::endl << std::endl
+			    //	      << "ввод: "       << std::endl
+			    //	      << "отправлено: " << rsXXX << std::endl
+			    //	      << "принято:   " << std::endl;
 
                             ftdi.FTDI_WriteBuffer(rsXXX);
 

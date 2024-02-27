@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "RSXXX_FTDI_Serial.h"
+#include "GCI.h"
 
 int32_t getch() {
     struct termios oldattr, newattr;
@@ -303,6 +304,7 @@ void test::IUtility::menu() {
     std::string rsDNT;
 
     std::string rsSended;
+    std::string pressAnyKey;
 
     while (true) {
         main_menu();
@@ -323,7 +325,32 @@ void test::IUtility::menu() {
 
                 break;
 
-	        case 3:break;
+	        case 3:
+		        system("rm -rf usb_mount;mkdir usb_mount;umount /dev/sda");
+
+                std::cout << "USB:\nПодключите flash накопитель в порт USB Type-C" << std::endl;
+
+    		    while (true) {
+	    	        system("clear");
+		
+		            std::cout << "USB:\nПодключите flash накопитель в порт USB Type-C" << std::endl;
+
+                    if (system("ls /dev/sda")) {
+                        std::cout << ColoredGCIText::red("USB flash накопитель не авториззирован") << std::endl;
+			            system("gpioset 0 13=0;gpioset 0 13=1");
+    		        }
+
+	    	        else {
+                        break;
+                    }
+                    //    system("mount /dev/sda usb_mount;ls usb_mount");
+    		    }
+
+		        system("mount /dev/sda usb_mount;ls usb_mount");
+
+                std::cin >> pressAnyKey;
+
+		    break;
             case 16:
                 std::thread([&]() -> void {
                     if (CAN())

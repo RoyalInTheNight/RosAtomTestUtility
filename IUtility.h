@@ -58,6 +58,7 @@ namespace test {
         void LoRa_WAN();
         void Iridium();
         void LowPower_RealTime();
+        void GNSS();
 
         void menu();
     };

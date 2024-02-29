@@ -3,11 +3,15 @@
 //
 #include "IUtility.h"
 
+#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <linux/spi/spi.h>
+#include <linux/spi/spidev.h>
+#include <string>
 #include <termios.h>
 #include <unistd.h>
 #include <csignal>
@@ -16,6 +20,10 @@
 
 #include "RSXXX_FTDI_Serial.h"
 #include "GCI.h"
+#include "include/core.h"
+#include "include/utils.h"
+#include "include/socket.h"
+#include "spi.h"
 
 int32_t getch() {
     struct termios oldattr, newattr;
@@ -246,21 +254,146 @@ bool test::IUtility::SIM() {
 }
 
 bool test::IUtility::CAN() {
-    if (system("/tmp/fota.sock")) {
-	std::cout << "file deleted" << std::endl;
-    }
+    tp::bit init       = true;
+    tp::s32 spi_socket = 0;
 
-    else {
-	std::cout << "file delete success" << std::endl;
-    }
-	
-    if (system(path_platform.c_str())) {
-        std::cout << "Command: " << path_platform << " error" << std::endl;
+    char tx[100];
+    char rx[100];
 
-        return false;
-    }
+    int p             = 0;
+    int n_transaction = 0;
 
-    return true;
+    std::string can_type_data;
+
+    KAMAz_spi_rc1::spi_can_msg can[5];
+    struct spi_ioc_transfer transfer = {
+        .len         = 100,
+        .delay_usecs = 0  
+    };
+
+    transfer.cs_change = 0;
+
+    auto check_size = [&]() {
+        tp::u32 count = 0;
+
+        for (tp::u32 i = 0; i < 100; i += 20)
+            if (tx[i] != 0) ++count;
+
+        return count;
+    };
+
+    for (tp::u32 i = 0; ; i++) {
+        if (i > 0)
+            init = false;
+
+        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
+                                               &transfer, 
+                                               &spi_socket, 
+                                               init, 
+                                               SPI_MODE_0, tx, rx);
+
+        memset(tx, 0, 100);
+
+        std::cout << "CAN\n"
+                  << "Введите номер тестируемого интерфейса и нажмите Enter:\n"
+                  << "1 - ПРИЕМ CAN1\n"
+                  << "2 - ОТПРАВКА CAN1\n"
+                  << "3 - ПРИЕМ CAN2\n"
+                  << "4 - ОТПРАВКА CAN2\n"
+                  << "5 - ПРИЕМ CAN3\n"
+                  << "6 - ОТПРАВКА CAN3\n"
+                  << "can> ";
+
+        std::cin >> p;
+
+        switch (p) {
+            case 1:
+                std::cout << "ПРИЕМ CAN1\n"
+                          << "№ ТРАНЗАКЦИИ\tID\tTYPE\tDATA\n";
+
+                for (tp::u32 t = 0; t < check_size(); t++) {
+                    memcpy(&can[t], &tx[t * 20], 20);
+
+                    if (can[t].can_num == 1) {
+                        n_transaction++;
+
+                        std::cout << n_transaction << "\t" << can[t].can_id
+                                                   << "\t" << "no\t";
+
+
+                        for (int j = 0; j < can[t].data_len; j++)
+                            std::cout << can[t].data[j] << " ";
+
+                        std::cout << std::endl; 
+                    }
+                }
+
+            break;
+
+            case 2:
+                std::cout << "ОТПРАВКА CAN\n"
+                          << "1 - ID -> 0x1FFFFFFF\n"
+                          << "2 - TYPE EXT/STD\n"
+                          << "3 - DATA -> 00 11 22 33 44 55 66 77\n"
+                          << "ENTER -> ";
+
+                std::cin >> can_type_data;
+
+            break;
+
+            case 3:
+                std::cout << "ПРИЕМ CAN1\n"
+                          << "№ ТРАНЗАКЦИИ\tID\tTYPE\tDATA\n";
+
+                for (tp::u32 t = 0; t < check_size(); t++) {
+                    memcpy(&can[t], &tx[t * 20], 20);
+
+                    if (can[t].can_num == 2) {
+                        n_transaction++;
+
+                        std::cout << n_transaction << "\t" << can[t].can_id
+                                                   << "\t" << "no\t";
+
+
+                        for (int j = 0; j < can[t].data_len; j++)
+                            std::cout << can[t].data[j] << " ";
+
+                        std::cout << std::endl; 
+                    }
+                }
+
+            break;
+            
+            case 4:
+            break;
+
+            case 5:
+                std::cout << "ПРИЕМ CAN1\n"
+                          << "№ ТРАНЗАКЦИИ\tID\tTYPE\tDATA\n";
+
+                for (tp::u32 t = 0; t < check_size(); t++) {
+                    memcpy(&can[t], &tx[t * 20], 20);
+
+                    if (can[t].can_num == 3) {
+                        n_transaction++;
+
+                        std::cout << n_transaction << "\t" << can[t].can_id
+                                                   << "\t" << "no\t";
+
+
+                        for (int j = 0; j < can[t].data_len; j++)
+                            std::cout << can[t].data[j] << " ";
+
+                        std::cout << std::endl; 
+                    }
+                }
+
+            break;
+
+            case 6:
+            break;
+        } 
+    }
 }
 
 #include <sys/socket.h>
@@ -530,13 +663,76 @@ void test::IUtility::menu() {
                         break;
                 }
 
-                break;
+            break;
+
+            case 19:
+                this->GNSS();
+
+            break;
 
             default:
                 std::cout << "Unknown option" << std::endl;
 
                 break;
 
+        }
+    }
+}
+
+void test::IUtility::GNSS() {
+    struct spi_ioc_transfer transfer = {
+        .len         = 100,
+        .delay_usecs = 0
+    };
+
+    KAMAz_spi_rc1::spi_can_msg msg[5];
+    platform_utils                plm;
+
+    transfer.cs_change = 0;
+
+    char buffer_tx[100];
+    char buffer_rx[100];
+
+    tp::bit init       = true;
+    tp::s32 spi_socket = 0;
+
+    auto check_size = [&]() -> tp::s32 {
+        tp::s32 count = 0;
+
+        for (tp::s32 t = 0; t < 100; t += 20)
+            if (buffer_rx[t] != 0)
+                ++count;
+
+        return count;
+    };
+
+    for (tp::u32 i = 0;; i++) {
+        if (i > 0)
+            init = false;
+
+        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0",
+                                               &transfer,
+                                               &spi_socket, init,
+                                               SPI_MODE_0,
+                                               buffer_tx,
+                                               buffer_rx, 8, 10000000);
+
+        memset(buffer_tx, 0, 100);
+
+        for (tp::u32 j = 0; j < check_size(); j++) {
+            plm.memcpy(&msg[j], &buffer_rx[j * 20], 20);
+
+            system("clear");
+
+            switch (msg[j].can_num) {
+                case 4:
+                    std::cout << buffer_rx << std::endl;
+
+                default:
+                    std::cout << ColoredGCIText::red("[ERROR]Unknown data string") << std::endl;
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
 }

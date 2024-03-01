@@ -160,6 +160,7 @@ namespace KAMAz_spi_rc1 {
                               struct spi_ioc_transfer *tr,
                               int32_t *	   fd,
                               bool 		   init_spi,
+                              bool        debug_mod,
                               uint32_t 	   mode,
                               char *	   tx,
                               char *	   rx,
@@ -206,83 +207,107 @@ namespace KAMAz_spi_rc1 {
                 *fd = open(CAN_DEVICE, O_RDWR);
 
                 if (*fd < 0) {
-                    std::cerr << "spi_nor: [FAILED]Error open can" << std::endl;
+                    if (debug_mod)
+                        std::cerr << "spi_nor: [FAILED]Error open can" << std::endl;
+                    
                     return;
                 }
 
                 else
-                    std::cout << "spi_nor: [  OK  ]Open can device success" << std::endl;
+                    if (debug_mod)
+                        std::cout << "spi_nor: [  OK  ]Open can device success" << std::endl;
 
                 result  = ioctl(*fd, SPI_IOC_WR_MODE32, &mode);
                 request = mode;
 
                 if (result < 0) {
-                    std::cerr << "spi_nor: [FAILED]Error set spi mode wr" << std::endl;
+                    if (debug_mod)
+                        std::cerr << "spi_nor: [FAILED]Error set spi mode wr" << std::endl;
+                    
                     return;
                 }
 
                 else
-                    std::cout << "spi_nor: [  OK  ]Set spi mode success" << std::endl;
+                    if (debug_mod)
+                        std::cout << "spi_nor: [  OK  ]Set spi mode success" << std::endl;
 
                 result = ioctl(*fd, SPI_IOC_RD_MODE32, &mode);
 
                 if (result < 0) {
-                    std::cerr << "spi_nor: [FAILED]Error set spi mode rd" << std::endl;
+                    if (debug_mod)
+                        std::cerr << "spi_nor: [FAILED]Error set spi mode rd" << std::endl;
+                    
                     return;
                 }
 
                 else
-                    std::cout << "spi_nor: [  OK  ]Set spi mode success" << std::endl;
+                    if (debug_mod)
+                        std::cout << "spi_nor: [  OK  ]Set spi mode success" << std::endl;
 
                 if (request != mode)
-                    std::cout << "spi_nor: [WARNING]Device does not support mode: " << std::hex << request << std::endl;
+                    if (debug_mod)
+                        std::cout << "spi_nor: [WARNING]Device does not support mode: " << std::hex << request << std::endl;
 
                 result = ioctl(*fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
 
                 if (result < 0) {
-                    std::cerr << "spi_nor: [FAILED]Can't set bits" << std::endl;
+                    if (debug_mod)
+                        std::cerr << "spi_nor: [FAILED]Can't set bits" << std::endl;
+                    
                     return;
                 }
 
                 else
+                    if (debug_mod)
                     std::cout << "spi_nor: [  OK  ]Set bits success" << std::endl;
 
                 result = ioctl(*fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
 
                 if (result < 0) {
-                    std::cerr << "spi_nor: [FAILED]Can't get bits" << std::endl;
+                    if (debug_mod)
+                        std::cerr << "spi_nor: [FAILED]Can't get bits" << std::endl;
+                    
                     return;
                 }
 
                 else
-                    std::cout << "spi_nor: [  OK  ]Get bits success" << std::endl;
+                    if (debug_mod)
+                        std::cout << "spi_nor: [  OK  ]Get bits success" << std::endl;
 
                 result = ioctl(*fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
 
                 if (result < 0) {
-                    std::cerr << "spi_nor: [FAILED]Set speed error" << std::endl;
+                    if (debug_mod)
+                        std::cerr << "spi_nor: [FAILED]Set speed error" << std::endl;
+                    
                     return;
                 }
 
                 else
-                    std::cout << "spi_nor: [  OK  ]Set speed success" << std::endl;
+                    if (debug_mod)
+                        std::cout << "spi_nor: [  OK  ]Set speed success" << std::endl;
 
                 result = ioctl(*fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
 
                 if (result < 0) {
-                    std::cerr << "spi_nor: [FAILED]Get speed error" << std::endl;
+                    if (debug_mod)
+                        std::cerr << "spi_nor: [FAILED]Get speed error" << std::endl;
+                    
                     return;
                 }
 
                 else
-                    std::cout << "spi_nor: [  OK  ]Get speed success" << std::endl;
+                    if (debug_mod)
+                        std::cout << "spi_nor: [  OK  ]Get speed success" << std::endl;
             }
 
 
             result = ioctl(*fd, SPI_IOC_MESSAGE(1), tr);
 
             if (result < 1) {
-                std::cerr << "spi_nor: [FAILED]Send message spi error" << std::endl;
+                if (debug_mod)
+                    std::cerr << "spi_nor: [FAILED]Send message spi error" << std::endl;
+                
                 return;
             }
         }

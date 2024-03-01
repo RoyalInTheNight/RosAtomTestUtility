@@ -253,6 +253,93 @@ bool test::IUtility::SIM() {
     return true;
 }
 
+void test::IUtility::OSignal() {
+    int pick = 0;
+
+    // IOSignal::__OSignal OS;
+    IOSignal::__OSignal IS;
+
+    tp::u32 count           = 0;
+    tp::u32 offset_size     = 0;
+    tp::u32 offset_IOSignal = sizeof(IOSignal::__OSignal);
+    tp::bit offset_eof      = false;
+    tp::bit init            = true;
+    tp::s32 spi_socket      = 0;
+
+    char tx[1250];
+    char rx[1250];
+
+    struct spi_ioc_transfer transfer = {
+        .len         = 1250,
+        .delay_usecs = 0  
+    };
+
+    transfer.cs_change = 0;
+
+    std::thread([&]() {
+        while (true) {
+            std::cout << "ВЫХОДНЫЕ СИГНАЛЫ:\n"
+                      << "1 - Включить LS1\n"
+                      << "2 - Выключить LS1\n"
+                      << "3 - Включить LS2\n"
+                      << "4 - Выключить LS2\n"
+                      << "5 - Включить MUTE\n"
+                      << "6 - Выключить MUTE\n"
+                      << "enter-> ";
+
+            std::cin >> pick;
+
+            switch (pick) {
+                case 1:IS.switch1_enstate = 1;break;
+                case 2:IS.switch1_enstate = 0;break;
+                case 3:IS.switch2_enstate = 1;break;
+                case 4:IS.switch2_enstate = 0;break;
+                case 5:IS.mute_enstate    = 1;break;
+                case 6:IS.mute_enstate    = 0;break;
+            }
+        }
+    }).detach();
+
+    for (tp::u32 i = 0; ; i++) {
+        if (i > 0)
+            init = false;
+
+        memset(tx, 0, sizeof(tx));
+
+        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
+                                               &transfer, 
+                                               &spi_socket, 
+                                               init,
+                                               false, 
+                                               SPI_MODE_0, tx, rx,
+                                               8, 1000000);
+
+        memset(tx, 0, 1250);
+
+        while (!offset_eof) {
+            if (rx[offset_size] == (int)9) {
+                offset_size += sizeof(IOSignal::__OSignal);
+                count++;
+            }
+
+            else
+                offset_eof = true;
+        }
+
+        IOSignal::__OSignal OS[count];
+
+        for (tp::u32 j = 0; j < offset_size; j += offset_IOSignal)
+            memcpy(&OS[j], &rx[j * offset_IOSignal], offset_IOSignal);
+
+        for (tp::u32 k = 0; k < sizeof(OS) / sizeof(IOSignal::__OSignal); k++) {
+            if (IS.switch1_enstate != OS[k].switch1_enstate ||
+                IS.switch2_enstate != OS[k].switch2_enstate ||
+                IS.mute_enstate    != OS[k].mute_enstate)
+                memcpy(tx, &IS, sizeof(IS));
+        }
+    }
+}
+
 bool test::IUtility::CAN() {
     tp::bit init       = true;
     tp::s32 spi_socket = 0;
@@ -290,7 +377,11 @@ bool test::IUtility::CAN() {
                                                &transfer, 
                                                &spi_socket, 
                                                init, 
-                                               SPI_MODE_0, tx, rx);
+                                               false,
+                                               SPI_MODE_0, 
+                                               tx, rx, 
+                                               8, 
+                                               10000000);
 
         memset(tx, 0, 100);
 
@@ -666,6 +757,10 @@ void test::IUtility::menu() {
             break;
 
             case 19:
+                system("clear");
+                
+                std::cout << "GNSS: " << std::endl;
+
                 this->GNSS();
 
             break;
@@ -712,7 +807,9 @@ void test::IUtility::GNSS() {
 
         KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0",
                                                &transfer,
-                                               &spi_socket, init,
+                                               &spi_socket, 
+                                               init, 
+                                               false,
                                                SPI_MODE_0,
                                                buffer_tx,
                                                buffer_rx, 8, 10000000);
@@ -722,14 +819,12 @@ void test::IUtility::GNSS() {
         for (tp::u32 j = 0; j < check_size(); j++) {
             plm.memcpy(&msg[j], &buffer_rx[j * 20], 20);
 
-            system("clear");
-
             switch (msg[j].can_num) {
                 case 4:
                     std::cout << buffer_rx << std::endl;
 
-                default:
-                    std::cout << ColoredGCIText::red("[ERROR]Unknown data string") << std::endl;
+                //default:
+                //    std::cout << ColoredGCIText::red("[ERROR]Unknown data string") << std::endl;
             }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));

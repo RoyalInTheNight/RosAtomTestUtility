@@ -6,6 +6,7 @@
 #ifndef TEST_UTILITY_IUTILITY_H
 #define TEST_UTILITY_IUTILITY_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <fstream>
@@ -14,6 +15,15 @@
 
 using json       = nlohmann::json;
 using file_read  =  std::ifstream;
+
+namespace IOSignal {
+    typedef struct {
+        uint8_t          msg_id;
+        uint8_t switch1_enstate;
+        uint8_t switch2_enstate;
+        uint8_t    mute_enstate;
+    } __OSignal;
+}
 
 namespace test {
     class IUtility {

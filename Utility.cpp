@@ -253,6 +253,80 @@ bool test::IUtility::SIM() {
     return true;
 }
 
+void test::IUtility::ISignal() {
+    system("clear");
+
+    int pick = 0;
+
+    tp::u32 count           = 0;
+    tp::u32 offset_size     = 0;
+    tp::u32 offset_IOSignal = sizeof(IOSignal::__ISignal);
+    tp::bit offset_eof      = false;
+    tp::bit init            = true;
+    tp::s32 spi_socket      = 0;
+
+    char tx[1250];
+    char rx[1250];
+
+    struct spi_ioc_transfer transfer = {
+        .len         = 1250,
+        .delay_usecs = 0
+    };
+
+    transfer.cs_change = 0;
+
+    for (tp::u32 i = 0; ; i++) {
+        if (i > 0)
+            init = false;
+
+        memset(tx, 0, sizeof(tx));
+
+        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
+                                               &transfer, 
+                                               &spi_socket, 
+                                               init, 
+                                               false, 
+                                               SPI_MODE_0, 
+                                               tx, rx,
+                                               8, 1000000);
+
+        while (!offset_eof) {
+            if (rx[offset_size] == (int)11) {
+                offset_size += sizeof(IOSignal::__ISignal);
+                count++;
+            }
+
+            else
+                offset_eof = true;
+        }
+
+        IOSignal::__ISignal IS[count];
+
+        for (tp::u32 t = 0; t < offset_size; t += offset_IOSignal)
+            memcpy(&IS[t], &rx[t * offset_IOSignal], offset_IOSignal);
+
+        for (tp::u32 j = 0; j < sizeof(IS) / sizeof(IOSignal::__ISignal); j++) {
+            std::cout << "ВХОДНЫЕ СИГНАЛЫ:" << std::endl
+                      << "AIN1, B - " << (int)IS[j].AIN1 << std::endl
+                      << "AIN2, B - " << (int)IS[j].AIN2 << std::endl
+                      << "AIN3, B - " << (int)IS[j].AIN3 << std::endl
+                      << "AIN4, B - " << (int)IS[j].AIN4 << std::endl
+                      << "Клемма 300, B - " << (int)IS[j].AIN5 << std::endl
+                      << "Клемма 150, B - " << (int)IS[j].AIN6 << std::endl
+                      << "DIN1 - " << (int)IS[j].DIN1 << std::endl
+                      << "DIN1 - " << (int)IS[j].DIN2 << std::endl
+                      << "DIN1 - " << (int)IS[j].DIN3 << std::endl
+                      << "DIN1 - " << (int)IS[j].DIN4 << std::endl
+                      << "DIN1 - " << (int)IS[j].DIN5 << std::endl
+                      << "GPS.DETECT - " << (int)IS[j].DIN6 << std::endl;
+        }
+
+        system("clear");
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+}
+
 void test::IUtility::OSignal() {
     int pick = 0;
 
@@ -314,7 +388,7 @@ void test::IUtility::OSignal() {
                                                SPI_MODE_0, tx, rx,
                                                8, 1000000);
 
-        memset(tx, 0, 1250);
+        // memset(tx, 0, 1250);
 
         while (!offset_eof) {
             if (rx[offset_size] == (int)9) {
@@ -575,6 +649,10 @@ void test::IUtility::menu() {
                 std::cin >> pressAnyKey;
 
 		    break;
+
+            case 8:
+                this->ISignal();
+            break;
             case 16:
                 std::thread([&]() -> void {
                     if (CAN())
@@ -634,6 +712,11 @@ void test::IUtility::menu() {
                 std::cin >> anykey;
 
 		    break;
+
+            case 7:
+                this->OSignal();
+
+            break;
 
             case 1:
                 system("clear");

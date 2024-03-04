@@ -23,6 +23,38 @@ namespace IOSignal {
         uint8_t switch2_enstate;
         uint8_t    mute_enstate;
     } __OSignal;
+
+    typedef struct {
+        uint8_t msg_id;
+        int16_t temperature_batt1;
+        uint16_t voltage_batt1;
+        uint8_t state_batt1;
+        int16_t temperature_batt2;
+        uint16_t voltage_batt2;
+        uint8_t state_batt2;
+        int16_t temperature_batt3;
+        uint16_t voltage_batt3;
+        uint8_t state_batt3;
+        int16_t temperature_batt4;
+        uint16_t voltage_batt4;
+        uint8_t state_batt4;
+    } __Battery;
+
+    typedef struct {
+        uint8_t  msg_id;
+        uint16_t AIN1;
+        uint16_t AIN2;
+        uint16_t AIN3;
+        uint16_t AIN4;
+        uint16_t AIN5;
+        uint16_t AIN6;
+        uint8_t  DIN1;
+        uint8_t  DIN2;
+        uint8_t  DIN3;
+        uint8_t  DIN4;
+        uint8_t  DIN5;
+        uint8_t  DIN6;
+    } __ISignal;
 }
 
 namespace test {

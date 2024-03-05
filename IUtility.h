@@ -32,7 +32,16 @@ typedef enum {
 }EXCHANGE_IDs_t;
 
 namespace IOSignal {
-    typedef struct {
+    typedef struct OSig {
+        OSig() : msg_id{9} {}
+        OSig(char *rx, uint32_t begPoint, uint32_t endPoint) {
+            msg_id = rx[begPoint];
+
+            switch1_enstate = rx[begPoint + 1];
+            switch2_enstate = rx[begPoint + 2];
+            mute_enstate    = rx[endPoint];
+        }
+
         uint8_t          msg_id;
         uint8_t switch1_enstate;
         uint8_t switch2_enstate;

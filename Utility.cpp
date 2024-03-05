@@ -333,6 +333,8 @@ void test::IUtility::ISignal() {
                 offset_eof = true;
         }
 
+        offset_eof = false;
+
         for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
             IOSignal::__ISignal ISignal(rx, ISignalOffsetList.at(t), 18);
 
@@ -371,6 +373,9 @@ void test::IUtility::OSignal() {
     tp::bit offset_eof      = false;
     tp::bit init            = true;
     tp::s32 spi_socket      = 0;
+
+    std::vector<uint32_t>  ISignalOffsetList;
+    std::vector<IOSignal::__OSignal> OS;
 
     char tx[1250];
     char rx[1250];
@@ -423,19 +428,50 @@ void test::IUtility::OSignal() {
         // memset(tx, 0, 1250);
 
         while (!offset_eof) {
-            if (rx[offset_size] == (int)9) {
-                offset_size += sizeof(IOSignal::__OSignal);
+            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS)
+                //ISignalOffsetList.push_back(offset_size);
+                offset_size += 19;
+                //count++;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_BATTERY)
+                offset_size += 21;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_OUTPUTS) {
+                ISignalOffsetList.push_back(offset_size);
+                offset_size += 4;
+
                 count++;
             }
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_DCDC)
+                offset_size += 5;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3)
+                offset_size += 19;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_GNSS)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_ETH_AUTOMOTIVE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_LIN)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
 
             else
                 offset_eof = true;
         }
 
-        IOSignal::__OSignal OS[count];
+        for (tp::u32 j = 0; j < ISignalOffsetList.size(); j++) {
+            IOSignal::__OSignal OSignal(rx, ISignalOffsetList.at(j), 3);
 
-        for (tp::u32 j = 0; j < offset_size; j += offset_IOSignal)
-            memcpy(&OS[j], &rx[j * offset_IOSignal], offset_IOSignal);
+            OS.push_back(OSignal);
+        }
 
         for (tp::u32 k = 0; k < sizeof(OS) / sizeof(IOSignal::__OSignal); k++) {
             if (IS.switch1_enstate != OS[k].switch1_enstate ||

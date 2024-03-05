@@ -268,7 +268,6 @@ void test::IUtility::ISignal() {
 
     std::vector<uint32_t>  ISignalOffsetList;
     std::vector<IOSignal::__ISignal>      IS;
-    IOSignal::__ISignal              ISignal;
 
     char tx[1250];
     char rx[1250];
@@ -335,8 +334,8 @@ void test::IUtility::ISignal() {
         }
 
         for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
-            memcpy(&ISignal, &rx[ISignalOffsetList.at(t)], 19);
-        
+            IOSignal::__ISignal ISignal(rx, ISignalOffsetList.at(t), 18);
+
             IS.push_back(ISignal);
         }
 

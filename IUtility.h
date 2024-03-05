@@ -55,7 +55,26 @@ namespace IOSignal {
         uint8_t state_batt4;
     } __Battery;
 
-    typedef struct {
+    typedef struct ISig {
+        ISig() : msg_id{11} {}
+        ISig(char *rx, uint32_t begPoint, uint32_t endPoint) {
+            msg_id = rx[begPoint];
+
+            AIN1 = ((rx[begPoint + 1] << 1)  + (rx[begPoint + 2]));
+            AIN2 = ((rx[begPoint + 3] << 1)  + (rx[begPoint + 4]));
+            AIN3 = ((rx[begPoint + 5] << 1)  + (rx[begPoint + 6]));
+            AIN4 = ((rx[begPoint + 7] << 1)  + (rx[begPoint + 8]));
+            AIN5 = ((rx[begPoint + 9] << 1)  + (rx[begPoint + 10]));
+            AIN6 = ((rx[begPoint + 11] << 1) + (rx[begPoint + 12]));
+
+            DIN1 = rx[begPoint + 13];
+            DIN2 = rx[begPoint + 14];
+            DIN3 = rx[begPoint + 15];
+            DIN4 = rx[begPoint + 16];
+            DIN5 = rx[begPoint + 17];
+            DIN6 = rx[begPoint + endPoint];
+        }
+
         uint8_t  msg_id;
         uint16_t AIN1;
         uint16_t AIN2;

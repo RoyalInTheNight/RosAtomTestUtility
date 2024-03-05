@@ -17,6 +17,7 @@
 #include <csignal>
 #include <thread>
 #include <memory>
+#include <vector>
 
 #include "RSXXX_FTDI_Serial.h"
 #include "GCI.h"
@@ -265,6 +266,10 @@ void test::IUtility::ISignal() {
     tp::bit init            = true;
     tp::s32 spi_socket      = 0;
 
+    std::vector<uint32_t>  ISignalOffsetList;
+    std::vector<IOSignal::__ISignal>      IS;
+    IOSignal::__ISignal              ISignal;
+
     char tx[1250];
     char rx[1250];
 
@@ -294,6 +299,7 @@ void test::IUtility::ISignal() {
 
         while (!offset_eof) {
             if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS) {
+                ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
                 count++;
             }
@@ -328,12 +334,13 @@ void test::IUtility::ISignal() {
                 offset_eof = true;
         }
 
-        IOSignal::__ISignal IS[count];
+        for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
+            memcpy(&ISignal, &rx[ISignalOffsetList.at(t)], 19);
+        
+            IS.push_back(ISignal);
+        }
 
-        for (tp::u32 t = 0; t < offset_size; t += offset_IOSignal)
-            memcpy(&IS[t], &rx[t * offset_IOSignal], offset_IOSignal);
-
-        for (tp::u32 j = 0; j < sizeof(IS) / sizeof(IOSignal::__ISignal); j++) {
+        for (tp::u32 j = 0; j < IS.size(); j++) {
             std::cout << "ВХОДНЫЕ СИГНАЛЫ:" << std::endl
                       << "AIN1, B - " << (int)IS[j].AIN1 << std::endl
                       << "AIN2, B - " << (int)IS[j].AIN2 << std::endl

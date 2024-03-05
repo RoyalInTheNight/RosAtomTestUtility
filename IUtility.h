@@ -16,6 +16,21 @@
 using json       = nlohmann::json;
 using file_read  =  std::ifstream;
 
+typedef enum {
+    msgid_NONE = 0,
+    msgid_CAN1,
+    msgid_CAN2,
+    msgid_CAN3,
+    msgid_GNSS,
+    msgid_ETH_AUTOMOTIVE,
+    msgid_LIN,
+    msgid_1WIRE,
+    msgid_DCDC,
+    msgid_OUTPUTS,
+    msgid_BATTERY,
+    msgid_INPUTS
+}EXCHANGE_IDs_t;
+
 namespace IOSignal {
     typedef struct {
         uint8_t          msg_id;

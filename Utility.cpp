@@ -280,7 +280,7 @@ void test::IUtility::ISignal() {
             init = false;
 
         system("clear");
-        
+
         memset(tx, 0, sizeof(tx));
 
         KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
@@ -293,10 +293,36 @@ void test::IUtility::ISignal() {
                                                8, 1000000);
 
         while (!offset_eof) {
-            if (rx[offset_size] == (int)11) {
-                offset_size += sizeof(IOSignal::__ISignal);
+            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS) {
+                offset_size += 19;
                 count++;
             }
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_BATTERY)
+                offset_size += 21;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_OUTPUTS)
+                offset_size += 4;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_DCDC)
+                offset_size += 5;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3)
+                offset_size += 19;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_GNSS)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_ETH_AUTOMOTIVE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_LIN)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
 
             else
                 offset_eof = true;

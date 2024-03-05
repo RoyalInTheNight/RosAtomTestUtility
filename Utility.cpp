@@ -279,6 +279,8 @@ void test::IUtility::ISignal() {
         if (i > 0)
             init = false;
 
+        system("clear");
+        
         memset(tx, 0, sizeof(tx));
 
         KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
@@ -320,8 +322,6 @@ void test::IUtility::ISignal() {
                       << "DIN1 - " << (int)IS[j].DIN5 << std::endl
                       << "GPS.DETECT - " << (int)IS[j].DIN6 << std::endl;
         }
-
-        system("clear");
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }

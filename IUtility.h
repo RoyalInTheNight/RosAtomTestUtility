@@ -28,14 +28,15 @@ typedef enum {
     msgid_DCDC,
     msgid_OUTPUTS,
     msgid_BATTERY,
-    msgid_INPUTS
+    msgid_INPUTS,
+    msgid_RTC
 }EXCHANGE_IDs_t;
 
 namespace IOSignal {
     typedef struct OSig {
         OSig() : msg_id{9} {}
         OSig(char *rx, uint32_t begPoint, uint32_t endPoint) {
-            msg_id = rx[begPoint];
+            msg_id = (int)rx[begPoint];
 
             switch1_enstate = rx[begPoint + 1];
             switch2_enstate = rx[begPoint + 2];
@@ -64,10 +65,32 @@ namespace IOSignal {
         uint8_t state_batt4;
     } __Battery;
 
+    typedef struct RTC {
+        RTC() : msg_id(12) {}
+        RTC(char *rx, uint32_t begPoint, uint32_t endPoint) {
+            msg_id = (int)rx[begPoint];
+
+            DD = rx[begPoint + 1];
+            MM = rx[begPoint + 2];
+            YY = rx[begPoint + 3];
+            hh = rx[begPoint + 4];
+            mm = rx[begPoint + 5];
+            ss = rx[endPoint];
+        }
+
+        uint8_t msg_id;
+        uint8_t DD;
+        uint8_t MM;
+        uint8_t YY;
+        uint8_t hh;
+        uint8_t mm;
+        uint8_t ss;
+    } __RTC;
+
     typedef struct ISig {
         ISig() : msg_id{11} {}
         ISig(char *rx, uint32_t begPoint, uint32_t endPoint) {
-            msg_id = rx[begPoint];
+            msg_id = (int)rx[begPoint];
 
             AIN1 = ((rx[begPoint + 1] << 1)  + (rx[begPoint + 2]));
             AIN2 = ((rx[begPoint + 3] << 1)  + (rx[begPoint + 4]));
@@ -144,6 +167,7 @@ namespace test {
         void Iridium();
         void LowPower_RealTime();
         void GNSS();
+        void RTC();
 
         void menu();
     };

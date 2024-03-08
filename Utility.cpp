@@ -254,6 +254,108 @@ bool test::IUtility::SIM() {
     return true;
 }
 
+void test::IUtility::RTC() {
+    system("clear");
+
+    std::cout << "RTC:" << std::endl;
+
+    int pick = 0;
+
+    tp::u32 count       = 0;
+    tp::u32 offset_size = 0;
+    tp::u32 offset_RTC  = sizeof(IOSignal::__RTC);
+    tp::bit offset_eof  = false;
+    tp::bit init        = true;
+    tp::s32 spi_socket  = 0;
+
+    std::vector<uint32_t> ISignalOffsetList;
+    std::vector<IOSignal::__RTC>        RTC;
+
+    char tx[1250];
+    char rx[1250];
+
+    struct spi_ioc_transfer transfer = {
+        .len         = 1250,
+        .delay_usecs = 0
+    };
+
+    transfer.cs_change = 0;
+
+    for (tp::u32 i = 0; ; i++) {
+        if (i > 0)
+            init = false;
+
+        memset(tx, 0, sizeof(tx));
+
+        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0",
+                                               &transfer,
+                                               &spi_socket, 
+                                               init, 
+                                               false, 
+                                               SPI_MODE_0, tx, rx, 
+                                               8, 1000000);
+
+        while (!offset_eof) {
+            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS) {
+                //ISignalOffsetList.push_back(offset_size);
+                offset_size += 19;
+                //count++;
+            }
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_BATTERY)
+                offset_size += 21;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_OUTPUTS)
+                offset_size += 4;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_DCDC)
+                offset_size += 5;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3)
+                offset_size += 19;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_GNSS)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_ETH_AUTOMOTIVE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_LIN)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC) {
+                ISignalOffsetList.push_back(offset_size);
+                offset_size += 7;
+
+                count++;
+            }
+
+            else
+                offset_eof =  true;
+        }       offset_eof = false;
+
+        for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
+            IOSignal::__RTC _RTC(rx, ISignalOffsetList.at(t), 6);
+
+            RTC.push_back(_RTC);
+        }
+
+        for (tp::u32 j = 0; j < RTC.size(); j++) {
+            std::cout << RTC.at(j).DD << ":"
+                      << RTC.at(j).MM << ":"
+                      << RTC.at(j).YY << ": "
+                      << RTC.at(j).hh << "."
+                      << RTC.at(j).mm << "."
+                      << RTC.at(j).ss << std::endl;
+        }
+    }
+}
+
 void test::IUtility::ISignal() {
     system("clear");
 
@@ -283,7 +385,7 @@ void test::IUtility::ISignal() {
         if (i > 0)
             init = false;
 
-        system("clear");
+        // system("clear");
 
         memset(tx, 0, sizeof(tx));
 
@@ -328,6 +430,9 @@ void test::IUtility::ISignal() {
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
                 offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC)
+                offset_size += 7;
 
             else
                 offset_eof = true;
@@ -462,6 +567,9 @@ void test::IUtility::OSignal() {
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
                 offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC)
+                offset_size += 7;
 
             else
                 offset_eof = true;

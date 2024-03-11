@@ -9,6 +9,7 @@ add_library(utils   STATIC source/utils.cpp)
 
 add_library(GCI STATIC GCI.cpp)
 add_library(RS  STATIC RSXXX_FTDI_Serial.cpp)
+add_library(UT  STATIC Utility.cpp)
 
 add_executable(rAtomBTP main.cpp)
 
@@ -17,3 +18,9 @@ target_link_libraries(rAtomBTP usocket)
 target_link_libraries(rAtomBTP   utils)
 target_link_libraries(rAtomBTP     GCI)
 target_link_libraries(rAtomBTP      RS)
+
+target_link_libraries(UT         utils)
+target_link_libraries(UT           GCI)
+target_link_libraries(UT            RS)
+
+target_link_libraries(rAtomBTP UT)

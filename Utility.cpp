@@ -296,10 +296,11 @@ void test::IUtility::RTC() {
                                                8, 1000000);
 
         while (!offset_eof) {
-            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS)
+            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS) {
                 //ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
                 //count++;
+            }
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_BATTERY)
                 offset_size += 21;
@@ -580,12 +581,13 @@ void test::IUtility::OSignal() {
             OS.push_back(OSignal);
         }
 
-        for (tp::u32 k = 0; k < sizeof(OS) / sizeof(IOSignal::__OSignal); k++) {
+        /*for (tp::u32 k = 0; k < sizeof(OS) / sizeof(IOSignal::__OSignal); k++) {
             if (IS.switch1_enstate != OS[k].switch1_enstate ||
                 IS.switch2_enstate != OS[k].switch2_enstate ||
-                IS.mute_enstate    != OS[k].mute_enstate)
-                memcpy(tx, &IS, sizeof(IS));
-        }
+                IS.mute_enstate    != OS[k].mute_enstate);
+        }*/
+
+        memcpy(tx, &IS, sizeof(IS));
     }
 }
 

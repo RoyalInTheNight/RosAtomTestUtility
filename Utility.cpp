@@ -446,41 +446,39 @@ void test::IUtility::ISignal() {
             IS.push_back(ISignal);
         }
 
-        std::thread([&]() -> void {
-            while (true) {
-                for (tp::u32 j = 0; j < IS.size(); j++) {
-                    system("clear");
+        for (tp::u32 j = 0; j < IS.size(); j++) {
+            system("clear");
 
-                    if ((int)IS[j].AIN1 || 
-                        (int)IS[j].AIN2 || 
-                        (int)IS[j].AIN3 || 
-                        (int)IS[j].AIN4 ||
-                        (int)IS[j].AIN5 ||
-                        (int)IS[j].AIN6 ||
-                        (int)IS[j].DIN1 ||
-                        (int)IS[j].DIN2 ||
-                        (int)IS[j].DIN3 ||
-                        (int)IS[j].DIN4 ||
-                        (int)IS[j].DIN5) {
-                        std::cout << "ВХОДНЫЕ СИГНАЛЫ:" << std::endl
-                                  << "AIN1, B - " << (int)IS[j].AIN1 << std::endl
-                                  << "AIN2, B - " << (int)IS[j].AIN2 << std::endl
-                                  << "AIN3, B - " << (int)IS[j].AIN3 << std::endl
-                                  << "AIN4, B - " << (int)IS[j].AIN4 << std::endl
-                                  << "Клемма 300, B - " << (int)IS[j].AIN5 << std::endl
-                                  << "Клемма 150, B - " << (int)IS[j].AIN6 << std::endl
-                                  << "DIN1 - " << (int)IS[j].DIN1 << std::endl
-                                  << "DIN1 - " << (int)IS[j].DIN2 << std::endl
-                                  << "DIN1 - " << (int)IS[j].DIN3 << std::endl
-                                  << "DIN1 - " << (int)IS[j].DIN4 << std::endl
-                                  << "DIN1 - " << (int)IS[j].DIN5 << std::endl
-                                  << "GPS.DETECT - " << (int)IS[j].DIN6 << std::endl;
-                    }
-
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                }
+            if ((int)IS[j].AIN1 || 
+                (int)IS[j].AIN2 || 
+                (int)IS[j].AIN3 || 
+                (int)IS[j].AIN4 ||
+                (int)IS[j].AIN5 ||
+                (int)IS[j].AIN6 ||
+                (int)IS[j].DIN1 ||
+                (int)IS[j].DIN2 ||
+                (int)IS[j].DIN3 ||
+                (int)IS[j].DIN4 ||
+                (int)IS[j].DIN5) {
+                std::cout << "ВХОДНЫЕ СИГНАЛЫ:" << std::endl
+                          << "AIN1, B - " << (int)IS[j].AIN1 << std::endl
+                          << "AIN2, B - " << (int)IS[j].AIN2 << std::endl
+                          << "AIN3, B - " << (int)IS[j].AIN3 << std::endl
+                          << "AIN4, B - " << (int)IS[j].AIN4 << std::endl
+                          << "Клемма 300, B - " << (int)IS[j].AIN5 << std::endl
+                          << "Клемма 150, B - " << (int)IS[j].AIN6 << std::endl
+                          << "DIN1 - " << (int)IS[j].DIN1 << std::endl
+                          << "DIN1 - " << (int)IS[j].DIN2 << std::endl
+                          << "DIN1 - " << (int)IS[j].DIN3 << std::endl
+                          << "DIN1 - " << (int)IS[j].DIN4 << std::endl
+                          << "DIN1 - " << (int)IS[j].DIN5 << std::endl
+                          << "GPS.DETECT - " << (int)IS[j].DIN6 << std::endl;
             }
-        }).detach();
+
+            //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 

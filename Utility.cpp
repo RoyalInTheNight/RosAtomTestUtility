@@ -535,6 +535,28 @@ void test::IUtility::OSignal() {
                       << "6 - Выключить MUTE\n"
                       << "enter-> ";
 
+            for (int i = 0; i < ISignalOffsetList.size(); i++) {
+                if (OS[i].switch1_enstate == 1)
+                    std::cout << "LS1 - ВКЛЮЧЕН" << std::endl;
+
+                if (OS[i].switch2_enstate == 1)
+                    std::cout << "LS2 - ВКЛЮЧЕН" << std::endl;
+
+                if (OS[i].mute_enstate    == 1)
+                    std::cout << "MUTE - ВКЛЮЧЕН" << std::endl;
+
+                if (OS[i].switch1_enstate == 0)
+                    std::cout << "LS1 - ВЫКЛЮЧЕН" << std::endl;
+
+                if (OS[i].switch2_enstate == 0)
+                    std::cout << "LS2 - ВЫКЛЮЧЕН" << std::endl;
+
+                if (OS[i].mute_enstate    == 0)
+                    std::cout << "MUTE - ВЫКЛЮЧЕН" << std::endl;
+            }
+
+            std::cout << "\033[3A";
+
             std::cin >> pick;
 
             switch (pick) {
@@ -545,6 +567,8 @@ void test::IUtility::OSignal() {
                 case 5:IS.mute_enstate    = 1;break;
                 case 6:IS.mute_enstate    = 0;break;
             }
+
+            std::cout << "\033[11A";
         }
     }).detach();
 
@@ -612,12 +636,6 @@ void test::IUtility::OSignal() {
 
             OS.push_back(OSignal);
         }
-
-        /*for (tp::u32 k = 0; k < sizeof(OS) / sizeof(IOSignal::__OSignal); k++) {
-            if (IS.switch1_enstate != OS[k].switch1_enstate ||
-                IS.switch2_enstate != OS[k].switch2_enstate ||
-                IS.mute_enstate    != OS[k].mute_enstate);
-        }*/
 
         memcpy(tx, &IS, sizeof(IS));
     }

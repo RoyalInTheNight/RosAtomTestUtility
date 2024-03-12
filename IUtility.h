@@ -34,7 +34,11 @@ typedef enum {
 
 namespace IOSignal {
     typedef struct OSig {
-        OSig() : msg_id{9} {}
+        OSig() : msg_id{9}, 
+                 switch1_enstate{0}, 
+                 switch2_enstate{0}, 
+                 mute_enstate{0} {}
+
         OSig(char *rx, uint32_t begPoint, uint32_t endPoint) {
             msg_id = (int)rx[begPoint];
 

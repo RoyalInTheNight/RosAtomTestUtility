@@ -536,22 +536,22 @@ void test::IUtility::OSignal() {
                       << "enter-> ";
 
             for (int i = 0; i < ISignalOffsetList.size(); i++) {
-                if (OS[i].switch1_enstate == 1)
+                if ((int)IS.switch1_enstate == 1)
                     std::cout << "LS1 - ВКЛЮЧЕН" << std::endl;
 
-                if (OS[i].switch2_enstate == 1)
+                if ((int)IS.switch2_enstate == 1)
                     std::cout << "LS2 - ВКЛЮЧЕН" << std::endl;
 
-                if (OS[i].mute_enstate    == 1)
+                if ((int)IS.mute_enstate    == 1)
                     std::cout << "MUTE - ВКЛЮЧЕН" << std::endl;
 
-                if (OS[i].switch1_enstate == 0)
+                if ((int)IS.switch1_enstate == 0)
                     std::cout << "LS1 - ВЫКЛЮЧЕН" << std::endl;
 
-                if (OS[i].switch2_enstate == 0)
+                if ((int)IS.switch2_enstate == 0)
                     std::cout << "LS2 - ВЫКЛЮЧЕН" << std::endl;
 
-                if (OS[i].mute_enstate    == 0)
+                if ((int)IS.mute_enstate    == 0)
                     std::cout << "MUTE - ВЫКЛЮЧЕН" << std::endl;
             }
 
@@ -576,8 +576,6 @@ void test::IUtility::OSignal() {
         if (i > 0)
             init = false;
 
-        memset(tx, 0, sizeof(tx));
-
         KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
                                                &transfer, 
                                                &spi_socket, 
@@ -586,6 +584,8 @@ void test::IUtility::OSignal() {
                                                SPI_MODE_0, tx, rx,
                                                8, 1000000);
 
+
+        memset(tx, 0, sizeof(tx));
         // memset(tx, 0, 1250);
 
         while (!offset_eof) {

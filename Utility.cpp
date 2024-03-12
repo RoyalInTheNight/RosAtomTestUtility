@@ -499,6 +499,8 @@ void test::IUtility::ISignal() {
 }
 
 void test::IUtility::OSignal() {
+    system("clear");
+	
     int pick = 0;
 
     // IOSignal::__OSignal OS;
@@ -555,7 +557,7 @@ void test::IUtility::OSignal() {
                     std::cout << "MUTE - ВЫКЛЮЧЕН" << std::endl;
             //}
 
-            std::cout << "\033[3A       ";
+            std::cout << "\033[4A       ";
 
             std::cin >> pick;
 

@@ -368,8 +368,8 @@ void test::IUtility::ISignal() {
     tp::bit init            = true;
     tp::s32 spi_socket      = 0;
 
-    tp::s32 AIN1 = 0, AIN2 = 0, AIN3 = 0, AIN4 = 0, AIN5 = 0, AIN6 = 0,
-            DIN1 = 0, DIN2 = 0, DIN3 = 0, DIN4 = 0, DIN5 = 0, DIN6 = 0;
+    float   AIN1 = 0, AIN2 = 0, AIN3 = 0, AIN4 = 0, AIN5 = 0, AIN6 = 0;
+    tp::s32 DIN1 = 0, DIN2 = 0, DIN3 = 0, DIN4 = 0, DIN5 = 0, DIN6 = 0;
 
     std::vector<uint32_t>  ISignalOffsetList;
     std::vector<IOSignal::__ISignal>      IS;
@@ -450,12 +450,12 @@ void test::IUtility::ISignal() {
         }
 
         for (tp::u32 j = 0; j < IS.size(); j++) {
-            AIN1 = (int)IS[j].AIN1;
-            AIN2 = (int)IS[j].AIN2;
-            AIN3 = (int)IS[j].AIN3;
-            AIN4 = (int)IS[j].AIN4;
-            AIN5 = (int)IS[j].AIN5;
-            AIN6 = (int)IS[j].AIN6;
+            AIN1 = ((float)IS[j].AIN1 / 10) * 10;
+            AIN2 = ((float)IS[j].AIN2 / 10) * 10;
+            AIN3 = ((float)IS[j].AIN3 / 10) * 10;
+            AIN4 = ((float)IS[j].AIN4 / 10) * 10;
+            AIN5 = ((float)IS[j].AIN5 / 10) * 10;
+            AIN6 = ((float)IS[j].AIN6 / 10) * 10;
 
             DIN1 = (int)IS[j].DIN1;
             DIN2 = (int)IS[j].DIN2;

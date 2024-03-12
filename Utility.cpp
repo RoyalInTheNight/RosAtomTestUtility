@@ -535,7 +535,7 @@ void test::IUtility::OSignal() {
                       << "6 - Выключить MUTE\n"
                       << "enter-> ";
 
-            for (int i = 0; i < ISignalOffsetList.size(); i++) {
+            //for (int i = 0; i < ISignalOffsetList.size(); i++) {
                 if ((int)IS.switch1_enstate == 1)
                     std::cout << "LS1 - ВКЛЮЧЕН" << std::endl;
 
@@ -553,7 +553,7 @@ void test::IUtility::OSignal() {
 
                 if ((int)IS.mute_enstate    == 0)
                     std::cout << "MUTE - ВЫКЛЮЧЕН" << std::endl;
-            }
+            //}
 
             std::cout << "\033[3A";
 

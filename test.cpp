@@ -1,57 +1,33 @@
-#include <chrono>
-#include <cstddef>
-#include <cstdlib>
-#include <cstring>
-#include <fstream>
 #include <iostream>
-#include <linux/spi/spi.h>
-#include <linux/spi/spidev.h>
 #include <string>
-#include <termios.h>
 #include <unistd.h>
-#include <csignal>
+#include <cstdio>
 #include <thread>
-#include <memory>
-#include <vector>
+#include <queue>
+#include <string.h>
+#include <iomanip>
 
-#include "RSXXX_FTDI_Serial.h"
-#include "GCI.h"
-#include "include/core.h"
-#include "include/utils.h"
-#include "include/socket.h"
-#include "spi.h"
+int main(int argc, char *argv[])
+{
+    __uint32_t var1 = 0;
+    __uint32_t var2 = 0;
+    __uint32_t var3 = 0;
+    __uint32_t var4 = 0;
+    __uint32_t var5 = 0;
 
-int main() {
-    system("clear");
-
-    std::cout << "Тестовый обмен" << std::endl;
-
-    tp::u32 count      = 0;
-    tp::bit init       = true;
-    tp::s32 spi_socket = 0;
-
-    char tx[1250];
-    char rx[1250];
-
-    struct spi_ioc_transfer transfer = {
-        .len         = 1250,
-        .delay_usecs = 0
-    };
-
-    transfer.cs_change = 0;
-
-    for (tp::u32 i = 0; ; i++) {
-        if (i > 0)
-            init = false;
-
-        memset(tx, 0, sizeof(tx));
-
-        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
-                                               &transfer, 
-                                               &spi_socket,
-                                               init, false, 
-                                               SPI_MODE_0, 
-                                               tx, rx, 8,
-                                               1000000);
+    while (true)
+    {
+        usleep(1000);
+        std::cout << "var1 is " << var1 << std::endl;
+        std::cout << "var2 is " << var2 << std::endl;
+        std::cout << "var3 is " << var3 << std::endl;
+        std::cout << "var4 is " << var4 << std::endl;
+        std::cout << "var5 is " << var5 << std::endl;
+        var1 += 1;
+        var2 += 2;
+        var3 += 3;
+        var4 += 4;
+        var5 += 5;
+        std::cout << "\033[5A";
     }
 }

@@ -533,7 +533,7 @@ void test::IUtility::OSignal() {
                       << "4 - Выключить LS2\n"
                       << "5 - Включить MUTE\n"
                       << "6 - Выключить MUTE\n"
-                      << "enter-> ";
+                      << "enter-> " << std::endl;
 
             //for (int i = 0; i < ISignalOffsetList.size(); i++) {
                 if ((int)IS.switch1_enstate == 1)
@@ -555,7 +555,7 @@ void test::IUtility::OSignal() {
                     std::cout << "MUTE - ВЫКЛЮЧЕН" << std::endl;
             //}
 
-            std::cout << "\033[3A";
+            std::cout << "\033[3A       ";
 
             std::cin >> pick;
 

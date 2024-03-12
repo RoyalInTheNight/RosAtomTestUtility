@@ -450,12 +450,12 @@ void test::IUtility::ISignal() {
         }
 
         for (tp::u32 j = 0; j < IS.size(); j++) {
-            AIN1 = ((float)IS[j].AIN1 / 10) * 10;
-            AIN2 = ((float)IS[j].AIN2 / 10) * 10;
-            AIN3 = ((float)IS[j].AIN3 / 10) * 10;
-            AIN4 = ((float)IS[j].AIN4 / 10) * 10;
-            AIN5 = ((float)IS[j].AIN5 / 10) * 10;
-            AIN6 = ((float)IS[j].AIN6 / 10) * 10;
+            AIN1 = ((float)IS[j].AIN1 / 10);
+            AIN2 = ((float)IS[j].AIN2 / 10);
+            AIN3 = ((float)IS[j].AIN3 / 10);
+            AIN4 = ((float)IS[j].AIN4 / 10);
+            AIN5 = ((float)IS[j].AIN5 / 10);
+            AIN6 = ((float)IS[j].AIN6 / 10);
 
             DIN1 = (int)IS[j].DIN1;
             DIN2 = (int)IS[j].DIN2;

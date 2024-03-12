@@ -368,6 +368,9 @@ void test::IUtility::ISignal() {
     tp::bit init            = true;
     tp::s32 spi_socket      = 0;
 
+    tp::s32 AIN1 = 0, AIN2 = 0, AIN3 = 0, AIN4 = 0, AIN5 = 0, AIN6 = 0,
+            DIN1 = 0, DIN2 = 0, DIN3 = 0, DIN4 = 0, DIN5 = 0, DIN6 = 0;
+
     std::vector<uint32_t>  ISignalOffsetList;
     std::vector<IOSignal::__ISignal>      IS;
 
@@ -447,31 +450,45 @@ void test::IUtility::ISignal() {
         }
 
         for (tp::u32 j = 0; j < IS.size(); j++) {
-            if ((int)IS[j].AIN1 || 
-                (int)IS[j].AIN2 || 
-                (int)IS[j].AIN3 || 
-                (int)IS[j].AIN4 ||
-                (int)IS[j].AIN5 ||
-                (int)IS[j].AIN6 ||
-                (int)IS[j].DIN1 ||
-                (int)IS[j].DIN2 ||
-                (int)IS[j].DIN3 ||
-                (int)IS[j].DIN4 ||
-                (int)IS[j].DIN5 ||
-                (int)IS[j].DIN6) {
+            AIN1 = (int)IS[j].AIN1;
+            AIN2 = (int)IS[j].AIN2;
+            AIN3 = (int)IS[j].AIN3;
+            AIN4 = (int)IS[j].AIN4;
+            AIN5 = (int)IS[j].AIN5;
+            AIN6 = (int)IS[j].AIN6;
+
+            DIN1 = (int)IS[j].DIN1;
+            DIN2 = (int)IS[j].DIN2;
+            DIN3 = (int)IS[j].DIN3;
+            DIN4 = (int)IS[j].DIN4;
+            DIN5 = (int)IS[j].DIN5;
+            DIN6 = (int)IS[j].DIN6;
+
+            if ((int)AIN1 || 
+                (int)AIN2 || 
+                (int)AIN3 || 
+                (int)AIN4 ||
+                (int)AIN5 ||
+                (int)AIN6 ||
+                (int)DIN1 ||
+                (int)DIN2 ||
+                (int)DIN3 ||
+                (int)DIN4 ||
+                (int)DIN5 ||
+                (int)DIN6) {
                 std::cout << "ВХОДНЫЕ СИГНАЛЫ:" << std::endl
-                          << "AIN1, B - " << (int)IS[j].AIN1 << std::endl
-                          << "AIN2, B - " << (int)IS[j].AIN2 << std::endl
-                          << "AIN3, B - " << (int)IS[j].AIN3 << std::endl
-                          << "AIN4, B - " << (int)IS[j].AIN4 << std::endl
-                          << "Клемма 300, B - " << (int)IS[j].AIN5 << std::endl
-                          << "Клемма 150, B - " << (int)IS[j].AIN6 << std::endl
-                          << "DIN1 - " << (int)IS[j].DIN1 << std::endl
-                          << "DIN2 - " << (int)IS[j].DIN2 << std::endl
-                          << "DIN3 - " << (int)IS[j].DIN3 << std::endl
-                          << "DIN4 - " << (int)IS[j].DIN4 << std::endl
-                          << "DIN5 - " << (int)IS[j].DIN5 << std::endl
-                          << "GPS.DETECT - " << (int)IS[j].DIN6 << std::endl;
+                          << "AIN1, B - " << AIN1 << std::endl
+                          << "AIN2, B - " << AIN2 << std::endl
+                          << "AIN3, B - " << AIN3 << std::endl
+                          << "AIN4, B - " << AIN4 << std::endl
+                          << "Клемма 300, B - " << AIN5 << std::endl
+                          << "Клемма 150, B - " << AIN6 << std::endl
+                          << "DIN1 - " << DIN1 << std::endl
+                          << "DIN2 - " << DIN2 << std::endl
+                          << "DIN3 - " << DIN3 << std::endl
+                          << "DIN4 - " << DIN4 << std::endl
+                          << "DIN5 - " << DIN5 << std::endl
+                          << "GPS.DETECT - " << DIN6 << std::endl;
 
                 std::cout << "\033[13A";
             }

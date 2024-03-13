@@ -847,57 +847,22 @@ bool test::IUtility::CAN() {
             CAN.push_back(_CAN);
         }
 
-        std::cout << "CAN"                                                    << std::endl
-                  << "Введите номер тестируемого интерфейса и нажмите enter:" << std::endl
-                  << "1 - ПРИЕМ CAN1"    << std::endl
-                  << "2 - ОТПРАВКА CAN1" << std::endl
-                  << "3 - ПРИЕМ CAN2"    << std::endl
-                  << "4 - ОТПРАВКА CAN2" << std::endl
-                  << "5 - ПРИЕМ CAN3"    << std::endl
-                  << "6 - ОТПРАВКА CAN3" << std::endl
-                  << "enter-> ";
+        if (pick_CAN == 1) {
+            for (int t = 0; t < CAN.size(); t++) {
+                std::cout << "ПРИЕМ CAN1"                  << std::endl
+                          << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA" << std::endl
+                          << (t + 1)                   << "\t"
+                          << std::hex << CAN[t].can_id << "\t";
 
-        std::cin >> pick_CAN;
+                if (CAN[t].msg_type == 0)
+                    std::cout << "ext\t";
 
-        if      (pick_CAN == 1) {
-            system("clear");
+                else if (CAN[t].msg_type == 1)
+                    std::cout << "std\t";
 
-            std::thread([&]() -> void {
-                while (true) {
-                    std::cin >> regulator;
-
-                    if (regulator == 'x')
-                        break;
-                }
-            }).detach();
-
-            std::thread([&]() -> void {;
-                while (true) {
-                    if (regulator == 'x') {
-                        std::cout << ColoredGCIText::red("exit activated") << std::endl;
-
-                        pick_CAN = 0;
-
-                        return;
-                    }
-
-                    for (int h = 0; h < CAN.size(); h++) {
-                        std::cout << "ПРИЕМ CAN1"                  << std::endl
-                                  << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA" << std::endl
-                                  <<                   (h + 1) << "\t"
-                                  << std::hex << CAN[h].can_id << "\t";
-
-                        if (CAN[h].msg_type == 0)
-                            std::cout << "ext\t";
-
-                        if (CAN[h].msg_type == 1)
-                            std::cout << "std\t";
-
-                        for (int y = 0; y < (int)CAN[h].datalen; y++)
-                            std::cout << (int)CAN[h].data[y] << " ";
-                    }
-                }
-            }).detach();
+                for (int g = 0; g < (int)CAN[t].datalen; g++)
+                    std::cout << (int)CAN[t].data[g] << " ";
+            } 
         }
 
         else if (pick_CAN == 2) {
@@ -918,6 +883,20 @@ bool test::IUtility::CAN() {
 
         else if (pick_CAN == 6) {
             
+        }
+
+        else {
+            std::cout << "CAN"                                                    << std::endl
+                  << "Введите номер тестируемого интерфейса и нажмите enter:" << std::endl
+                  << "1 - ПРИЕМ CAN1"    << std::endl
+                  << "2 - ОТПРАВКА CAN1" << std::endl
+                  << "3 - ПРИЕМ CAN2"    << std::endl
+                  << "4 - ОТПРАВКА CAN2" << std::endl
+                  << "5 - ПРИЕМ CAN3"    << std::endl
+                  << "6 - ОТПРАВКА CAN3" << std::endl
+                  << "enter-> ";
+
+            std::cin >> pick_CAN;
         }
     }
 }

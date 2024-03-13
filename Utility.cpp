@@ -902,6 +902,9 @@ bool test::IUtility::CAN() {
 
             std::cin >> pick_CAN;
         }
+
+        CAN.clear();
+        ISignalOffsetList.clear();
     }
 }
 

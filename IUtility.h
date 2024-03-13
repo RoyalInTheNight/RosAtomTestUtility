@@ -30,9 +30,61 @@ typedef enum {
     msgid_BATTERY,
     msgid_INPUTS,
     msgid_RTC
-}EXCHANGE_IDs_t;
+} EXCHANGE_IDs_t;
 
 namespace IOSignal {
+    typedef struct CAN {
+        CAN() {}
+        CAN(char *rx, uint32_t begPoint, uint32_t endPoint) {
+            msg_id    =   (int)rx[begPoint];
+            can_id    = (((int)rx[begPoint +  1] << 3) + 
+                         ((int)rx[begPoint +  2] << 2) +
+                         ((int)rx[begPoint +  3] << 1) +
+                         ((int)rx[begPoint +  4]));
+
+            datalen   =   (int)rx[begPoint +  5];
+            msg_type  =   (int)rx[begPoint +  6];
+            timestamp = (((int)rx[begPoint +  7] << 3) +
+                         ((int)rx[begPoint +  8] << 2) +
+                         ((int)rx[begPoint +  9] << 1) +
+                         ((int)rx[begPoint + 10]));
+            
+            data[0] = rx[begPoint + 11];
+            data[1] = rx[begPoint + 12];
+            data[2] = rx[begPoint + 13];
+            data[3] = rx[begPoint + 14];
+            data[4] = rx[begPoint + 15];
+            data[5] = rx[begPoint + 16];
+            data[6] = rx[begPoint + 17];
+            data[7] = rx[endPoint];
+        }
+
+        uint8_t     msg_id;
+        uint32_t    can_id;
+        uint8_t    datalen;
+        uint8_t   msg_type;
+        uint32_t timestamp;
+        uint8_t    data[8];
+    } __CAN;
+
+    typedef struct DCDC {
+        DCDC() : msg_id{8} {}
+        DCDC(char *rx, uint32_t begPoint, uint32_t endPoint) {
+            msg_id = (int)rx[begPoint];
+
+            dcdc1_voltage = rx[begPoint + 1];
+            dcdc1_enstate = rx[begPoint + 2];
+            dcdc2_voltage = rx[begPoint + 3];
+            dcdc2_enstate = rx[endPoint];
+        }
+
+        uint8_t msg_id;
+        uint8_t dcdc1_voltage;
+        uint8_t dcdc1_enstate;
+        uint8_t dcdc2_voltage;
+        uint8_t dcdc2_enstate;
+    } __AkbDCDC;
+
     typedef struct OSig {
         OSig() : msg_id{9}, 
                  switch1_enstate{0}, 
@@ -162,6 +214,7 @@ namespace test {
         void ETHERNET();
         void OSignal();
         void ISignal();
+        void DCDC_AKB();
         void HScope();
         void Magnitometr();
         void KLine();

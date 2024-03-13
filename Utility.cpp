@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -356,6 +357,103 @@ void test::IUtility::RTC() {
     }
 }
 
+void test::IUtility::DCDC_AKB() {
+    system("clear");
+
+    int pick = 0;
+
+    tp::u32 count       = 0;
+    tp::u32 offset_size = 0;
+    tp::u32 offset_dcdc = sizeof(IOSignal::__AkbDCDC);
+    tp::bit offset_eof  = false;
+    tp::bit init        = true;
+    tp::s32 spi_socket  = 0;
+
+    std::vector<uint32_t> ISignalOffsetList;
+    std::vector<IOSignal::__AkbDCDC>  __AKB;
+
+    char tx[1250];
+    char rx[1250];
+
+    struct spi_ioc_transfer transfer = {
+        .len         = 1250,
+        .delay_usecs = 0
+    };
+
+    transfer.cs_change = 0;
+
+    for (tp::u32 i = 0; ; i++) {
+        if (i > 0)
+            init = false;
+
+        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0",
+                                               &transfer,
+                                               &spi_socket,
+                                               init,
+                                               false,
+                                               SPI_MODE_0,
+                                               tx, rx,
+                                               8, 1000000);
+
+        memset(tx, 0, sizeof(tx));
+
+        while (!offset_eof) {
+            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS)
+                // ISignalOffsetList.push_back(offset_size);
+                offset_size += 19;
+                // count++;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_BATTERY)
+                offset_size += 21;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_OUTPUTS)
+                offset_size += 4;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_DCDC) {
+                ISignalOffsetList.push_back(offset_size);
+                offset_size += 5;
+
+                count++;
+            }
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3)
+                offset_size += 19;
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_GNSS)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_ETH_AUTOMOTIVE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_LIN)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC)
+                offset_size += 7;
+
+            else
+                offset_eof = true;
+        }
+
+        offset_eof = false;
+
+        for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
+            IOSignal::__AkbDCDC ISignal(rx, ISignalOffsetList.at(t), 18);
+
+            __AKB.push_back(ISignal);
+        }
+
+        for (tp::u32 t = 0; t < __AKB.size(); t++) {
+
+        }
+    }
+}
+
 void test::IUtility::ISignal() {
     system("clear");
 
@@ -390,8 +488,6 @@ void test::IUtility::ISignal() {
 
         // system("clear");
 
-        memset(tx, 0, sizeof(tx));
-
         KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
                                                &transfer, 
                                                &spi_socket, 
@@ -400,6 +496,8 @@ void test::IUtility::ISignal() {
                                                SPI_MODE_0, 
                                                tx, rx,
                                                8, 1000000);
+
+        memset(tx, 0, sizeof(tx));
 
         while (!offset_eof) {
             if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS) {
@@ -644,149 +742,176 @@ void test::IUtility::OSignal() {
 }
 
 bool test::IUtility::CAN() {
-    tp::bit init       = true;
-    tp::s32 spi_socket = 0;
+    system("clear");
 
-    char tx[100];
-    char rx[100];
+    enum class pick_mode
+        : uint8_t {
+        can1_read = 0xa1,
+        can1_send,
+        can2_read,
+        can2_send,
+        can3_read,
+        can3_send
+    };
 
-    int p             = 0;
-    int n_transaction = 0;
+    int pick = 0;
 
-    std::string can_type_data;
+    tp::u32 count       = 0;
+    tp::u32 offset_size = 0;
+    tp::u32 offset_CAN  = sizeof(IOSignal::__CAN);
+    tp::bit offset_eof  = false;
+    tp::bit init        = true;
+    tp::s32 spi_socket  = 0;
+    char    regulator   = 0;
 
-    KAMAz_spi_rc1::spi_can_msg can[5];
+    pick_mode          mode;
+
+    std::vector<uint32_t> ISignalOffsetList;
+    std::vector<IOSignal::__CAN>        CAN;
+
+    char tx[1250];
+    char rx[1250];
+
     struct spi_ioc_transfer transfer = {
-        .len         = 100,
-        .delay_usecs = 0  
+        .len         = 1250,
+        .delay_usecs = 0
     };
 
     transfer.cs_change = 0;
-
-    auto check_size = [&]() {
-        tp::u32 count = 0;
-
-        for (tp::u32 i = 0; i < 100; i += 20)
-            if (tx[i] != 0) ++count;
-
-        return count;
-    };
 
     for (tp::u32 i = 0; ; i++) {
         if (i > 0)
             init = false;
 
-        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0", 
-                                               &transfer, 
-                                               &spi_socket, 
-                                               init, 
+        KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0",
+                                               &transfer,
+                                               &spi_socket,
+                                               init,
                                                false,
-                                               SPI_MODE_0, 
-                                               tx, rx, 
-                                               8, 
-                                               10000000);
+                                               SPI_MODE_0,
+                                               tx, rx,
+                                               8, 1000000);
 
-        memset(tx, 0, 100);
+        memset(tx, 0, sizeof(tx));
 
-        std::cout << "CAN\n"
-                  << "Введите номер тестируемого интерфейса и нажмите Enter:\n"
-                  << "1 - ПРИЕМ CAN1\n"
-                  << "2 - ОТПРАВКА CAN1\n"
-                  << "3 - ПРИЕМ CAN2\n"
-                  << "4 - ОТПРАВКА CAN2\n"
-                  << "5 - ПРИЕМ CAN3\n"
-                  << "6 - ОТПРАВКА CAN3\n"
-                  << "can> ";
+        while (!offset_eof) {
+            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS) {
+                //ISignalOffsetList.push_back(offset_size);
+                offset_size += 19;
+                //count++;
+            }
 
-        std::cin >> p;
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_BATTERY)
+                offset_size += 21;
 
-        switch (p) {
-            case 1:
-                std::cout << "ПРИЕМ CAN1\n"
-                          << "№ ТРАНЗАКЦИИ\tID\tTYPE\tDATA\n";
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_OUTPUTS)
+                offset_size += 4;
 
-                for (tp::u32 t = 0; t < check_size(); t++) {
-                    memcpy(&can[t], &tx[t * 20], 20);
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_DCDC)
+                offset_size += 5;
 
-                    if (can[t].can_num == 1) {
-                        n_transaction++;
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2 ||
+                     rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3) {
+                ISignalOffsetList.push_back(offset_size);
+                offset_size += 19;
 
-                        std::cout << n_transaction << "\t" << can[t].can_id
-                                                   << "\t" << "no\t";
+                count++;
+            }
 
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_GNSS)
+                offset_size += (2 + (int)rx[offset_size + 1]);
 
-                        for (int j = 0; j < can[t].data_len; j++)
-                            std::cout << can[t].data[j] << " ";
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_ETH_AUTOMOTIVE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
 
-                        std::cout << std::endl; 
-                    }
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_LIN)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
+                offset_size += (2 + (int)rx[offset_size + 1]);
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC)
+                // ISignalOffsetList.push_back(offset_size);
+                offset_size += 7;
+
+                // count++;
+
+            else
+                offset_eof =  true;
+        }       offset_eof = false;
+
+        for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
+            IOSignal::__CAN _CAN(rx, ISignalOffsetList.at(t), 18);
+
+            CAN.push_back(_CAN);
+        }
+
+        std::cout << "CAN"                                                    << std::endl
+                  << "Введите номер тестируемого интерфейса и нажмите enter:" << std::endl
+                  << "1 - ПРИЕМ CAN1"    << std::endl
+                  << "2 - ОТПРАВКА CAN1" << std::endl
+                  << "3 - ПРИЕМ CAN2"    << std::endl
+                  << "4 - ОТПРАВКА CAN2" << std::endl
+                  << "5 - ПРИЕМ CAN3"    << std::endl
+                  << "6 - ОТПРАВКА CAN3" << std::endl
+                  << "enter-> ";
+
+        std::cin >> pick;
+
+        if      (pick == 1) {
+            system("clear");
+
+            std::thread([&]() -> void {
+                while (true) {
+                    std::cin >> regulator;
+
+                    if (regulator == 'x')
+                        break;
                 }
+            }).detach();
 
-            break;
+            while (true) {
+                if (regulator == 'x')
+                    break;
 
-            case 2:
-                std::cout << "ОТПРАВКА CAN\n"
-                          << "1 - ID -> 0x1FFFFFFF\n"
-                          << "2 - TYPE EXT/STD\n"
-                          << "3 - DATA -> 00 11 22 33 44 55 66 77\n"
-                          << "ENTER -> ";
+                for (int h = 0; h < CAN.size(); h++) {
+                    std::cout << "ПРИЕМ CAN1"                  << std::endl
+                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA" << std::endl
+                              <<                   (h + 1) << "\t"
+                              << std::hex << CAN[h].can_id << "\t";
 
-                std::cin >> can_type_data;
+                    if (CAN[h].msg_type == 0)
+                        std::cout << "ext\t";
 
-            break;
+                    if (CAN[h].msg_type == 1)
+                        std::cout << "std\t";
 
-            case 3:
-                std::cout << "ПРИЕМ CAN1\n"
-                          << "№ ТРАНЗАКЦИИ\tID\tTYPE\tDATA\n";
-
-                for (tp::u32 t = 0; t < check_size(); t++) {
-                    memcpy(&can[t], &tx[t * 20], 20);
-
-                    if (can[t].can_num == 2) {
-                        n_transaction++;
-
-                        std::cout << n_transaction << "\t" << can[t].can_id
-                                                   << "\t" << "no\t";
-
-
-                        for (int j = 0; j < can[t].data_len; j++)
-                            std::cout << can[t].data[j] << " ";
-
-                        std::cout << std::endl; 
-                    }
+                    for (int y = 0; y < (int)CAN[h].datalen; y++)
+                        std::cout << (int)CAN[h].data[y] << " ";
                 }
+            }
+        }
 
-            break;
+        else if (pick == 2) {
+
+        }
+
+        else if (pick == 3) {
             
-            case 4:
-            break;
+        }
 
-            case 5:
-                std::cout << "ПРИЕМ CAN1\n"
-                          << "№ ТРАНЗАКЦИИ\tID\tTYPE\tDATA\n";
+        else if (pick == 4) {
+            
+        }
 
-                for (tp::u32 t = 0; t < check_size(); t++) {
-                    memcpy(&can[t], &tx[t * 20], 20);
+        else if (pick == 5) {
+            
+        }
 
-                    if (can[t].can_num == 3) {
-                        n_transaction++;
-
-                        std::cout << n_transaction << "\t" << can[t].can_id
-                                                   << "\t" << "no\t";
-
-
-                        for (int j = 0; j < can[t].data_len; j++)
-                            std::cout << can[t].data[j] << " ";
-
-                        std::cout << std::endl; 
-                    }
-                }
-
-            break;
-
-            case 6:
-            break;
-        } 
+        else if (pick == 6) {
+            
+        }
     }
 }
 

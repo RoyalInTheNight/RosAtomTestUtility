@@ -813,6 +813,8 @@ bool test::IUtility::CAN() {
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1 ||
                      rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2 ||
                      rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3) {
+                std::cout << ColoredGCIText::red(std::to_string(i + 1) + "breakpoint") << std::endl;
+
                 ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 
@@ -842,6 +844,7 @@ bool test::IUtility::CAN() {
         }       offset_eof = false;
 
         for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
+            std::cout << ColoredGCIText::red(std::to_string(t + 1) + "set construct") << std::endl;
             IOSignal::__CAN _CAN(rx, ISignalOffsetList.at(t), 18);
 
             CAN.push_back(_CAN);

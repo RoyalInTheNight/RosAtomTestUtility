@@ -754,7 +754,7 @@ bool test::IUtility::CAN() {
         can3_send
     };
 
-    int pick = 0;
+    int pick_CAN = 0;
 
     tp::u32 count       = 0;
     tp::u32 offset_size = 0;
@@ -787,7 +787,7 @@ bool test::IUtility::CAN() {
                                                &transfer,
                                                &spi_socket,
                                                init,
-                                               false,
+                                               true,
                                                SPI_MODE_0,
                                                tx, rx,
                                                8, 1000000);
@@ -857,9 +857,9 @@ bool test::IUtility::CAN() {
                   << "6 - ОТПРАВКА CAN3" << std::endl
                   << "enter-> ";
 
-        std::cin >> pick;
+        std::cin >> pick_CAN;
 
-        if      (pick == 1) {
+        if      (pick_CAN == 1) {
             system("clear");
 
             std::thread([&]() -> void {
@@ -871,45 +871,52 @@ bool test::IUtility::CAN() {
                 }
             }).detach();
 
-            while (true) {
-                if (regulator == 'x')
-                    break;
+            std::thread([&]() -> void {;
+                while (true) {
+                    if (regulator == 'x') {
+                        std::cout << ColoredGCIText::red("exit activated") << std::endl;
 
-                for (int h = 0; h < CAN.size(); h++) {
-                    std::cout << "ПРИЕМ CAN1"                  << std::endl
-                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA" << std::endl
-                              <<                   (h + 1) << "\t"
-                              << std::hex << CAN[h].can_id << "\t";
+                        pick_CAN = 0;
 
-                    if (CAN[h].msg_type == 0)
-                        std::cout << "ext\t";
+                        return;
+                    }
 
-                    if (CAN[h].msg_type == 1)
-                        std::cout << "std\t";
+                    for (int h = 0; h < CAN.size(); h++) {
+                        std::cout << "ПРИЕМ CAN1"                  << std::endl
+                                  << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA" << std::endl
+                                  <<                   (h + 1) << "\t"
+                                  << std::hex << CAN[h].can_id << "\t";
 
-                    for (int y = 0; y < (int)CAN[h].datalen; y++)
-                        std::cout << (int)CAN[h].data[y] << " ";
+                        if (CAN[h].msg_type == 0)
+                            std::cout << "ext\t";
+
+                        if (CAN[h].msg_type == 1)
+                            std::cout << "std\t";
+
+                        for (int y = 0; y < (int)CAN[h].datalen; y++)
+                            std::cout << (int)CAN[h].data[y] << " ";
+                    }
                 }
-            }
+            }).detach();
         }
 
-        else if (pick == 2) {
+        else if (pick_CAN == 2) {
 
         }
 
-        else if (pick == 3) {
+        else if (pick_CAN == 3) {
             
         }
 
-        else if (pick == 4) {
+        else if (pick_CAN == 4) {
             
         }
 
-        else if (pick == 5) {
+        else if (pick_CAN == 5) {
             
         }
 
-        else if (pick == 6) {
+        else if (pick_CAN == 6) {
             
         }
     }
@@ -1007,14 +1014,9 @@ void test::IUtility::menu() {
             case 8:
                 this->ISignal();
             break;
-            case 16:
-                std::thread([&]() -> void {
-                    if (CAN())
-                        std::cout << "CAN init success" << std::endl;
 
-                    else
-                        std::cout << "CAN init error..." << std::endl;
-                }).detach();
+            case 16:
+                this->CAN();
 
                 break;
 

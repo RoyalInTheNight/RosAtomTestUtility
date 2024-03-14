@@ -375,7 +375,7 @@ void test::IUtility::RTC() {
                       << (int)RTC.at(j).mm << "."
                       << (int)RTC.at(j).ss << std::endl;
 
-            std::cout << "\33[1A";
+            std::cout << "\33[1A                              ";
         }
 
         RTC.clear();

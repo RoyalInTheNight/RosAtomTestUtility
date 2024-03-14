@@ -810,12 +810,23 @@ bool test::IUtility::CAN() {
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_DCDC)
                 offset_size += 5;
 
-            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1) //||
-                     //rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2 ||
-                     //rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3) {
-                        {
-                std::cout << ColoredGCIText::red(std::to_string(i + 1) + "breakpoint") << std::endl;
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1) {
+                // std::cout << ColoredGCIText::red(std::to_string(i + 1) + "breakpoint") << std::endl;
 
+                ISignalOffsetList.push_back(offset_size);
+                offset_size += 19;
+
+                count++;
+            }
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2) {
+                ISignalOffsetList.push_back(offset_size);
+                offset_size += 19;
+
+                count++;
+            }
+
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3) {
                 ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 

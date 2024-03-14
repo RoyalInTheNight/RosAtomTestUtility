@@ -36,18 +36,18 @@ namespace IOSignal {
     typedef struct CAN {
         CAN() {}
         CAN(char *rx, uint32_t begPoint, uint32_t endPoint) {
-            msg_id    =   (int)rx[begPoint];
-            can_id    = (((int)rx[begPoint +  1] << 3) + 
-                         ((int)rx[begPoint +  2] << 2) +
-                         ((int)rx[begPoint +  3] << 1) +
-                         ((int)rx[begPoint +  4]));
+            msg_id    =   rx[begPoint];
+            can_id    = ((rx[begPoint +  1] << 3) + 
+                         (rx[begPoint +  2] << 2) +
+                         (rx[begPoint +  3] << 1) +
+                         (rx[begPoint +  4]));
 
-            datalen   =   (int)rx[begPoint +  5];
-            msg_type  =   (int)rx[begPoint +  6];
-            timestamp = (((int)rx[begPoint +  7] << 3) +
-                         ((int)rx[begPoint +  8] << 2) +
-                         ((int)rx[begPoint +  9] << 1) +
-                         ((int)rx[begPoint + 10]));
+            datalen   =   rx[begPoint +  5];
+            msg_type  =   rx[begPoint +  6];
+            timestamp = ((rx[begPoint +  7] << 3) +
+                         (rx[begPoint +  8] << 2) +
+                         (rx[begPoint +  9] << 1) +
+                         (rx[begPoint + 10]));
             
             data[0] = rx[begPoint + 11];
             data[1] = rx[begPoint + 12];

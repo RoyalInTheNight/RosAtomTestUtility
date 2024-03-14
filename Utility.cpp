@@ -795,11 +795,10 @@ bool test::IUtility::CAN() {
         memset(tx, 0, sizeof(tx));
 
         while (!offset_eof) {
-            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS) {
+            if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS)
                 //ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
                 //count++;
-            }
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_BATTERY)
                 offset_size += 21;
@@ -856,7 +855,8 @@ bool test::IUtility::CAN() {
         }       offset_eof = false;
 
         for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
-            std::cout << ColoredGCIText::red(std::to_string(t + 1) + " set construct") << std::endl;
+            // std::cout << ColoredGCIText::red(std::to_string(t + 1) + " set construct") << std::endl;
+            
             IOSignal::__CAN _CAN(rx, ISignalOffsetList.at(t), 18);
 
             std::cout << "debug_data: can_id - " << _CAN.can_id << "\t" <<  _CAN.timestamp << std::endl;
@@ -866,19 +866,21 @@ bool test::IUtility::CAN() {
 
         if (pick_CAN == 1) {
             for (int t = 0; t < CAN.size(); t++) {
-                std::cout << "ПРИЕМ CAN1"                  << std::endl
-                          << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA" << std::endl
-                          << (t + 1)                   << "\t\t"
-                          << std::hex << (int)CAN[t].can_id << "\t\t";
+                if (CAN[t].msg_id == 3) {
+                    std::cout << "ПРИЕМ CAN1"                   << std::endl
+                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
+                              << (t + 1)                        << "\t\t"
+                              << std::hex << (int)CAN[t].can_id << "\t";
 
-                if (CAN[t].msg_type == 0)
-                    std::cout << "ext\t";
+                    if (CAN[t].msg_type == 1)
+                        std::cout << "ext\t";
 
-                else if (CAN[t].msg_type == 1)
-                    std::cout << "std\t";
+                    else if (CAN[t].msg_type == 0)
+                        std::cout << "std\t";
 
-                for (int g = 0; g < (int)CAN[t].datalen; g++)
-                    std::cout << (int)CAN[t].data[g] << " ";
+                    for (int g = 0; g < (int)CAN[t].datalen; g++)
+                        std::cout    << (int)CAN[t].data[g] << " ";
+                }
             } 
         }
 
@@ -887,7 +889,23 @@ bool test::IUtility::CAN() {
         }
 
         else if (pick_CAN == 3) {
-            
+            for (int t = 0; t < CAN.size(); t++) {
+                if (CAN[t].msg_id == 3) {
+                    std::cout << "ПРИЕМ CAN2"                   << std::endl
+                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
+                              << (t + 1)                        << "\t\t"
+                              << std::hex << (int)CAN[t].can_id << "\t";
+
+                    if (CAN[t].msg_type == 1)
+                        std::cout << "ext\t";
+
+                    else if (CAN[t].msg_type == 0)
+                        std::cout << "std\t";
+
+                    for (int g = 0; g < (int)CAN[t].datalen; g++)
+                        std::cout    << (int)CAN[t].data[g] << " ";
+                }
+            }
         }
 
         else if (pick_CAN == 4) {
@@ -895,7 +913,23 @@ bool test::IUtility::CAN() {
         }
 
         else if (pick_CAN == 5) {
-            
+            for (int t = 0; t < CAN.size(); t++) {
+                if (CAN[t].msg_id == 3) {
+                    std::cout << "ПРИЕМ CAN3"                   << std::endl
+                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
+                              << (t + 1)                        << "\t\t"
+                              << std::hex << (int)CAN[t].can_id << "\t";
+
+                    if (CAN[t].msg_type == 1)
+                        std::cout << "ext\t";
+
+                    else if (CAN[t].msg_type == 0)
+                        std::cout << "std\t";
+
+                    for (int g = 0; g < (int)CAN[t].datalen; g++)
+                        std::cout    << (int)CAN[t].data[g] << " ";
+                }
+            }
         }
 
         else if (pick_CAN == 6) {

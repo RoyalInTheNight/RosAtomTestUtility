@@ -871,7 +871,7 @@ bool test::IUtility::CAN() {
                 if (CAN[t].msg_id == 1) {
                     std::cout << "ПРИЕМ CAN1"                   << std::endl
                               << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
-                              << (t + 1)                        << "\t\t"
+                              << (count + 1)                    << "\t\t"
                               << std::hex << (int)CAN[t].can_id << "\t";
 
                     if (CAN[t].msg_type == 1)
@@ -897,7 +897,7 @@ bool test::IUtility::CAN() {
                 if (CAN[t].msg_id == 2) {
                     std::cout << "ПРИЕМ CAN2"                   << std::endl
                               << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
-                              << (t + 1)                        << "\t\t"
+                              << (count + 1)                    << "\t\t"
                               << std::hex << (int)CAN[t].can_id << "\t";
 
                     if (CAN[t].msg_type == 1)
@@ -923,7 +923,7 @@ bool test::IUtility::CAN() {
                 if (CAN[t].msg_id == 3) {
                     std::cout << "ПРИЕМ CAN3"                   << std::endl
                               << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
-                              << (t + 1)                        << "\t\t"
+                              << (count + 1)                    << "\t\t"
                               << std::hex << (int)CAN[t].can_id << "\t";
 
                     if (CAN[t].msg_type == 1)
@@ -1233,6 +1233,11 @@ void test::IUtility::menu() {
                                       << "принято:   "  << std::endl;
                         break;
                 }
+
+            break;
+
+            case 18:
+                this->RTC();
 
             break;
 

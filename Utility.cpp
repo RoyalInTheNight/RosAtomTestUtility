@@ -368,12 +368,12 @@ void test::IUtility::RTC() {
         }
 
         for (tp::u32 j = 0; j < RTC.size(); j++) {
-            std::cout << RTC.at(j).DD << ":"
-                      << RTC.at(j).MM << ":"
-                      << RTC.at(j).YY << ": "
-                      << RTC.at(j).hh << "."
-                      << RTC.at(j).mm << "."
-                      << RTC.at(j).ss << std::endl;
+            std::cout << (int)RTC.at(j).DD << ":"
+                      << (int)RTC.at(j).MM << ":"
+                      << (int)RTC.at(j).YY << ": "
+                      << (int)RTC.at(j).hh << "."
+                      << (int)RTC.at(j).mm << "."
+                      << (int)RTC.at(j).ss << std::endl;
         }
 
         RTC.clear();

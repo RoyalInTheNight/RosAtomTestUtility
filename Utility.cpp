@@ -859,6 +859,8 @@ bool test::IUtility::CAN() {
             std::cout << ColoredGCIText::red(std::to_string(t + 1) + " set construct") << std::endl;
             IOSignal::__CAN _CAN(rx, ISignalOffsetList.at(t), 18);
 
+            std::cout << "debug_data: can_id - " << _CAN.can_id << "\t" <<  _CAN.timestamp << std::endl;
+
             CAN.push_back(_CAN);
         }
 

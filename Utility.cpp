@@ -794,7 +794,7 @@ bool test::IUtility::CAN() {
 
         memset(tx, 0, sizeof(tx));
 
-        std::cout << "sz_list: " << ISignalOffsetList.size() << std::endl;
+        // std::cout << "sz_list: " << ISignalOffsetList.size() << std::endl;
 
         while (!offset_eof) {
             if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS)
@@ -861,7 +861,7 @@ bool test::IUtility::CAN() {
             
             IOSignal::__CAN _CAN(rx, ISignalOffsetList.at(t), 18);
 
-            std::cout << "debug_data: can_id - " << _CAN.can_id << "\t" <<  _CAN.timestamp << std::endl;
+            // std::cout << "debug_data: can_id - " << _CAN.can_id << "\t" <<  _CAN.timestamp << std::endl;
 
             CAN.push_back(_CAN);
         }

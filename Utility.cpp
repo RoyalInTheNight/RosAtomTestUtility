@@ -959,7 +959,7 @@ bool test::IUtility::CAN() {
         }
 
         CAN.clear();
-        ISignalOffsetList.clear();
+        // ISignalOffsetList.clear();
     }
 }
 

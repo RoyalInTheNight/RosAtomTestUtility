@@ -311,28 +311,25 @@ void test::IUtility::RTC() {
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_DCDC)
                 offset_size += 5;
 
-            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1) {
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1)
                 // std::cout << ColoredGCIText::red(std::to_string(i + 1) + "breakpoint") << std::endl;
 
                 //ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 
                 //count++;
-            }
 
-            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2) {
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2)
                 //ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 
                 //count++;
-            }
 
-            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3) {
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3)
                 ///ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 
                 //count++;
-            }
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_GNSS)
                 offset_size += (2 + (int)rx[offset_size + 1]);
@@ -375,7 +372,7 @@ void test::IUtility::RTC() {
                       << (int)RTC.at(j).mm << "."
                       << (int)RTC.at(j).ss << std::endl;
 
-            std::cout << "\33[1A                              ";
+            std::cout << "\33[1A";
         }
 
         RTC.clear();
@@ -617,7 +614,7 @@ void test::IUtility::ISignal() {
             }
         }
 
-        IS.resize(0);
+        IS.clear();
     }
 }
 
@@ -765,6 +762,8 @@ void test::IUtility::OSignal() {
         memcpy(tx, &IS, sizeof(IS));
     }
 }
+
+#include <sstream>
 
 bool test::IUtility::CAN() {
     system("clear");
@@ -914,7 +913,47 @@ bool test::IUtility::CAN() {
         }
 
         else if (pick_CAN == 2) {
+            IOSignal::__CAN _CAN;
 
+            std::string __e;
+            std::string __string;
+            std::stringstream __sstream;
+            std::vector<std::string> enter;
+
+            _CAN.msg_id = 1;
+
+            std::cout << "ОТПРАВКА CAN1" << std::endl
+                      << "1 - ID"        << std::endl
+                      << "2 - TYPE"      << std::endl
+                      << "3 - DATA"      << std::endl
+                      << "enter-> ";
+
+            std::cin >> __string;
+
+            size_t pos = 0;
+
+            while ((pos = __string.find("/"))) {
+                __e = __string.substr(0, pos);
+
+                enter.push_back(__e);
+
+                __string.erase(0, pos + 1);
+            }
+
+            __sstream << std::hex << enter.at(0);
+            __sstream >> _CAN.can_id;
+
+            if (std::stoi(enter.at(1)) == 1)
+                _CAN.msg_type = 1;
+
+            else if (std::stoi(enter.at(1)) == 0)
+                _CAN.msg_type = 0;
+
+            for (int t = 0; t < enter.at(2).size(); t++)
+                _CAN.data[t] = enter.at(2).at(t);
+
+            _CAN.datalen   = sizeof(_CAN.data);
+            _CAN.timestamp = 0;
         }
 
         else if (pick_CAN == 3) {
@@ -940,7 +979,47 @@ bool test::IUtility::CAN() {
         }
 
         else if (pick_CAN == 4) {
-            
+            IOSignal::__CAN _CAN;
+
+            std::string __e;
+            std::string __string;
+            std::stringstream __sstream;
+            std::vector<std::string> enter;
+
+            _CAN.msg_id = 2;
+
+            std::cout << "ОТПРАВКА CAN1" << std::endl
+                      << "1 - ID"        << std::endl
+                      << "2 - TYPE"      << std::endl
+                      << "3 - DATA"      << std::endl
+                      << "enter-> ";
+
+            std::cin >> __string;
+
+            size_t pos = 0;
+
+            while ((pos = __string.find("/"))) {
+                __e = __string.substr(0, pos);
+
+                enter.push_back(__e);
+
+                __string.erase(0, pos + 1);
+            }
+
+            __sstream << std::hex << enter.at(0);
+            __sstream >> _CAN.can_id;
+
+            if (std::stoi(enter.at(1)) == 1)
+                _CAN.msg_type = 1;
+
+            else if (std::stoi(enter.at(1)) == 0)
+                _CAN.msg_type = 0;
+
+            for (int t = 0; t < enter.at(2).size(); t++)
+                _CAN.data[t] = enter.at(2).at(t);
+
+            _CAN.datalen   = sizeof(_CAN.data);
+            _CAN.timestamp = 0;
         }
 
         else if (pick_CAN == 5) {
@@ -966,7 +1045,47 @@ bool test::IUtility::CAN() {
         }
 
         else if (pick_CAN == 6) {
-            
+            IOSignal::__CAN _CAN;
+
+            std::string __e;
+            std::string __string;
+            std::stringstream __sstream;
+            std::vector<std::string> enter;
+
+            _CAN.msg_id = 3;
+
+            std::cout << "ОТПРАВКА CAN1" << std::endl
+                      << "1 - ID"        << std::endl
+                      << "2 - TYPE"      << std::endl
+                      << "3 - DATA"      << std::endl
+                      << "enter-> ";
+
+            std::cin >> __string;
+
+            size_t pos = 0;
+
+            while ((pos = __string.find("/"))) {
+                __e = __string.substr(0, pos);
+
+                enter.push_back(__e);
+
+                __string.erase(0, pos + 1);
+            }
+
+            __sstream << std::hex << enter.at(0);
+            __sstream >> _CAN.can_id;
+
+            if (std::stoi(enter.at(1)) == 1)
+                _CAN.msg_type = 1;
+
+            else if (std::stoi(enter.at(1)) == 0)
+                _CAN.msg_type = 0;
+
+            for (int t = 0; t < enter.at(2).size(); t++)
+                _CAN.data[t] = enter.at(2).at(t);
+
+            _CAN.datalen   = sizeof(_CAN.data);
+            _CAN.timestamp = 0;
         }
 
         else {

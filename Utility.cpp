@@ -286,8 +286,6 @@ void test::IUtility::RTC() {
         if (i > 0)
             init = false;
 
-        memset(tx, 0, sizeof(tx));
-
         KAMAz_spi_rc1::KAMAz_spi::spi_transmit("/dev/spidev1.0",
                                                &transfer,
                                                &spi_socket, 
@@ -295,6 +293,8 @@ void test::IUtility::RTC() {
                                                false, 
                                                SPI_MODE_0, tx, rx, 
                                                8, 1000000);
+
+        memset(tx, 0, sizeof(tx));
 
         while (!offset_eof) {
             if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS)
@@ -347,6 +347,8 @@ void test::IUtility::RTC() {
                 offset_size += (2 + (int)rx[offset_size + 1]);
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC) {
+                std::cout << ColoredGCIText::red("set break;") << std::endl;
+
                 ISignalOffsetList.push_back(offset_size);
                 offset_size += 7;
 
@@ -358,6 +360,8 @@ void test::IUtility::RTC() {
         }       offset_eof = false;
 
         for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
+            std::cout << ColoredGCIText::red("set break ISignalOffset;") << std::endl;
+
             IOSignal::__RTC _RTC(rx, ISignalOffsetList.at(t), 6);
 
             RTC.push_back(_RTC);

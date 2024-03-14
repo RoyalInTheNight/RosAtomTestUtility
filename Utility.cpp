@@ -794,6 +794,8 @@ bool test::IUtility::CAN() {
 
         memset(tx, 0, sizeof(tx));
 
+        std::cout << "sz_list: " << ISignalOffsetList.size() << std::endl;
+
         while (!offset_eof) {
             if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_INPUTS)
                 //ISignalOffsetList.push_back(offset_size);

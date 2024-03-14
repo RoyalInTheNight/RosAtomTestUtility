@@ -943,10 +943,10 @@ bool test::IUtility::CAN() {
             __sstream << std::hex << enter.at(0);
             __sstream >> _CAN.can_id;
 
-            if (std::stoi(enter.at(1)) == 1)
+            if (enter.at(1) == "ext")
                 _CAN.msg_type = 1;
 
-            else if (std::stoi(enter.at(1)) == 0)
+            else if (enter.at(1) == "std")
                 _CAN.msg_type = 0;
 
             for (int t = 0; t < enter.at(2).size(); t++)

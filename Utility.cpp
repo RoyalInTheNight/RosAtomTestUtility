@@ -866,7 +866,7 @@ bool test::IUtility::CAN() {
 
         if (pick_CAN == 1) {
             for (int t = 0; t < CAN.size(); t++) {
-                if (CAN[t].msg_id == 3) {
+                if (CAN[t].msg_id == 1) {
                     std::cout << "ПРИЕМ CAN1"                   << std::endl
                               << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
                               << (t + 1)                        << "\t\t"
@@ -890,7 +890,7 @@ bool test::IUtility::CAN() {
 
         else if (pick_CAN == 3) {
             for (int t = 0; t < CAN.size(); t++) {
-                if (CAN[t].msg_id == 3) {
+                if (CAN[t].msg_id == 2) {
                     std::cout << "ПРИЕМ CAN2"                   << std::endl
                               << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
                               << (t + 1)                        << "\t\t"

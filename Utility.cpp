@@ -314,24 +314,24 @@ void test::IUtility::RTC() {
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN1) {
                 // std::cout << ColoredGCIText::red(std::to_string(i + 1) + "breakpoint") << std::endl;
 
-                ISignalOffsetList.push_back(offset_size);
+                //ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 
-                count++;
+                //count++;
             }
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN2) {
-                ISignalOffsetList.push_back(offset_size);
+                //ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 
-                count++;
+                //count++;
             }
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_CAN3) {
-                ISignalOffsetList.push_back(offset_size);
+                ///ISignalOffsetList.push_back(offset_size);
                 offset_size += 19;
 
-                count++;
+                //count++;
             }
 
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_GNSS)
@@ -346,11 +346,12 @@ void test::IUtility::RTC() {
             else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_1WIRE)
                 offset_size += (2 + (int)rx[offset_size + 1]);
 
-            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC)
-                // ISignalOffsetList.push_back(offset_size);
+            else if (rx[offset_size] == (int)EXCHANGE_IDs_t::msgid_RTC) {
+                ISignalOffsetList.push_back(offset_size);
                 offset_size += 7;
 
-                // count++;
+                count++;
+            }
 
             else
                 offset_eof =  true;

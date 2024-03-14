@@ -880,6 +880,8 @@ bool test::IUtility::CAN() {
 
                     for (int g = 0; g < (int)CAN[t].datalen; g++)
                         std::cout    << (int)CAN[t].data[g] << " ";
+
+                    std::cout << std::endl;
                 }
             } 
         }
@@ -904,6 +906,8 @@ bool test::IUtility::CAN() {
 
                     for (int g = 0; g < (int)CAN[t].datalen; g++)
                         std::cout    << (int)CAN[t].data[g] << " ";
+
+                    std::cout << std::endl;
                 }
             }
         }
@@ -928,6 +932,8 @@ bool test::IUtility::CAN() {
 
                     for (int g = 0; g < (int)CAN[t].datalen; g++)
                         std::cout    << (int)CAN[t].data[g] << " ";
+
+                    std::cout << std::endl;
                 }
             }
         }

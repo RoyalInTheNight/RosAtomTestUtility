@@ -845,7 +845,7 @@ bool test::IUtility::CAN() {
         }       offset_eof = false;
 
         for (tp::u32 t = 0; t < ISignalOffsetList.size(); t++) {
-            std::cout << ColoredGCIText::red(std::to_string(t + 1) + "set construct") << std::endl;
+            std::cout << ColoredGCIText::red(std::to_string(t + 1) + " set construct") << std::endl;
             IOSignal::__CAN _CAN(rx, ISignalOffsetList.at(t), 18);
 
             CAN.push_back(_CAN);
@@ -855,8 +855,8 @@ bool test::IUtility::CAN() {
             for (int t = 0; t < CAN.size(); t++) {
                 std::cout << "ПРИЕМ CAN1"                  << std::endl
                           << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA" << std::endl
-                          << (t + 1)                   << "\t"
-                          << std::hex << CAN[t].can_id << "\t";
+                          << (t + 1)                   << "\t\t"
+                          << std::hex << (int)CAN[t].can_id << "\t\t";
 
                 if (CAN[t].msg_type == 0)
                     std::cout << "ext\t";

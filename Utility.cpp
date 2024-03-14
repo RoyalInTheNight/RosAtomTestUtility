@@ -954,6 +954,8 @@ bool test::IUtility::CAN() {
 
             _CAN.datalen   = sizeof(_CAN.data);
             _CAN.timestamp = 0;
+
+            memcpy(tx, &_CAN, sizeof(_CAN));
         }
 
         else if (pick_CAN == 3) {
@@ -1020,6 +1022,8 @@ bool test::IUtility::CAN() {
 
             _CAN.datalen   = sizeof(_CAN.data);
             _CAN.timestamp = 0;
+
+            memcpy(tx, &_CAN, sizeof(_CAN));
         }
 
         else if (pick_CAN == 5) {
@@ -1086,6 +1090,8 @@ bool test::IUtility::CAN() {
 
             _CAN.datalen   = sizeof(_CAN.data);
             _CAN.timestamp = 0;
+
+            memcpy(tx, &_CAN, sizeof(_CAN));
         }
 
         else {

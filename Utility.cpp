@@ -934,6 +934,7 @@ bool test::IUtility::CAN() {
             std::string __e;
             std::string __string;
             std::stringstream __sstream;
+            std::stringstream __sstreamEnterTreatment;
             std::vector<std::string> enter;
 
             _CAN.msg_id = 1;
@@ -962,21 +963,25 @@ bool test::IUtility::CAN() {
 
             uint8_t _ch = 0;
 
-            for (int t = 1; t < enter.at(2).size(); t++) {
-                // _CAN.data[t] = enter.at(2).at(t);
+            if (enter.at(2).size() % 2 != 0) {
+                for (int u = 1, y = 0; u < enter.at(2).size() - 1; u += 2, y++) {
+                    __sstreamEnterTreatment << std::hex << enter[2][u - 1] << enter[2][u];
+                    __sstreamEnterTreatment >> _ch;
 
-                _ch = ((enter.at(2).at(t - 1) << 1) + enter.at(2).at(t));
-
-                _CAN.data[t] = _ch;
+                    _CAN.data[y] = _ch;
+                }
             }
 
-            _CAN.datalen   = enter.at(2).size() / 2;
+            _CAN.datalen   = enter.at(2).size() % 2 != 0 ? ((enter.at(2).size() - 1) / 2) + 1 : enter.at(2).size() / 2;
 
-            std::cout << (int)_CAN.datalen << std::endl;
-            std::cout << std::hex << (int)_CAN.can_id  << std::endl;
+            std::cout << "len:  " << (int)_CAN.datalen << std::endl;
+            std::cout << "id:   " << std::hex << (int)_CAN.can_id  << std::endl
+                      << "data: ";
             
             for (const auto& _C: _CAN.data)
                 std::cout << std::hex << (int)_C << " ";
+
+            std::cout << std::endl;
 
             _CAN.timestamp = 0;
 
@@ -987,7 +992,7 @@ bool test::IUtility::CAN() {
 
             // std::cout << std::endl;
 
-            memcpy(tx, &_CAN, sizeof(_CAN));
+            memcpy(tx, &_CAN, 19);
         }
 
         else if (pick_CAN == 3) {

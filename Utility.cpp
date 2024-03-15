@@ -963,7 +963,7 @@ bool test::IUtility::CAN() {
             for (int t = 0; t < enter.at(2).size(); t++)
                 _CAN.data[t] = enter.at(2).at(t);
 
-            _CAN.datalen   = sizeof(_CAN.data);
+            _CAN.datalen   = enter.at(2).size();
             _CAN.timestamp = 0;
 
             std::cout << _CAN.can_id << std::endl;

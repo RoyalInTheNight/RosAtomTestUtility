@@ -950,7 +950,7 @@ bool test::IUtility::CAN() {
             for (int i = 0; i < enter.size(); i++)
                 std::cout << enter.at(i) << std::endl;
 
-            /*__sstream << std::hex << enter.at(0);
+            __sstream << std::hex << enter.at(0);
             __sstream >> _CAN.can_id;
 
             if (enter.at(1) == "ext")
@@ -965,7 +965,7 @@ bool test::IUtility::CAN() {
             _CAN.datalen   = sizeof(_CAN.data);
             _CAN.timestamp = 0;
 
-            memcpy(tx, &_CAN, sizeof(_CAN));**/
+            memcpy(tx, &_CAN, sizeof(_CAN));
         }
 
         else if (pick_CAN == 3) {

@@ -966,7 +966,7 @@ bool test::IUtility::CAN() {
             _CAN.datalen   = sizeof(_CAN.data);
             _CAN.timestamp = 0;
 
-            std::cout << std::hex << _CAN.can_id << std::endl;
+            std::cout << _CAN.can_id << std::endl;
 
             for (const auto& __C: _CAN.data)
                 std::cout << __C << " ";

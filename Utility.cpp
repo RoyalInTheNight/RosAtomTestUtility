@@ -765,6 +765,21 @@ void test::IUtility::OSignal() {
 
 #include <sstream>
 
+std::vector<std::string> split(std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
+
 bool test::IUtility::CAN() {
     system("clear");
 
@@ -930,15 +945,7 @@ bool test::IUtility::CAN() {
 
             std::cin >> __string;
 
-            size_t pos = 0;
-
-            while ((pos = __string.find("/"))) {
-                __e = __string.substr(0, pos);
-
-                enter.push_back(__e);
-
-                __string.erase(0, pos + 1);
-            }
+            enter = split(__string, "/");
 
             for (int i = 0; i < enter.size(); i++)
                 std::cout << enter.at(i) << std::endl;

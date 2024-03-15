@@ -960,18 +960,25 @@ bool test::IUtility::CAN() {
             else if (enter.at(1) == "std")
                 _CAN.msg_type = 0;
 
-            for (int t = 0; t < enter.at(2).size(); t++)
-                _CAN.data[t] = enter.at(2).at(t);
+            uint8_t _ch = 0;
 
-            _CAN.datalen   = enter.at(2).size();
+            for (int t = 1; t < enter.at(2).size(); t++) {
+                // _CAN.data[t] = enter.at(2).at(t);
+
+                _ch = ((enter.at(2).at(t - 1) << 1) + enter.at(2).at(t));
+
+                _CAN.data[t] = _ch;
+            }
+
+            _CAN.datalen   = enter.at(2).size() / 2;
             _CAN.timestamp = 0;
 
-            std::cout << _CAN.can_id << std::endl;
+            // std::cout << _CAN.can_id << std::endl;
 
-            //for (const auto& __C: _CAN.data)
-            //    std::cout << __C << " ";
+            // for (const auto& __C: _CAN.data)
+            //     std::cout << __C << " ";
 
-            //std::cout << std::endl;
+            // std::cout << std::endl;
 
             memcpy(tx, &_CAN, sizeof(_CAN));
         }

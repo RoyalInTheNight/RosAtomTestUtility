@@ -968,12 +968,12 @@ bool test::IUtility::CAN() {
 
             std::cout << _CAN.can_id << std::endl;
 
-            for (const auto& __C: _CAN.data)
-                std::cout << __C << " ";
+            //for (const auto& __C: _CAN.data)
+            //    std::cout << __C << " ";
 
-            std::cout << std::endl;
+            //std::cout << std::endl;
 
-            // memcpy(tx, &_CAN, sizeof(_CAN));
+            memcpy(tx, &_CAN, sizeof(_CAN));
         }
 
         else if (pick_CAN == 3) {

@@ -976,7 +976,7 @@ bool test::IUtility::CAN() {
             std::cout << std::hex << (int)_CAN.can_id  << std::endl;
             
             for (const auto& _C: _CAN.data)
-                std::cout << std::hex << _C << " ";
+                std::cout << std::hex << (int)_C << " ";
 
             _CAN.timestamp = 0;
 

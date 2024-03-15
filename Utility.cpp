@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <ios>
 #include <iostream>
 #include <linux/spi/spi.h>
 #include <linux/spi/spidev.h>
@@ -965,7 +966,14 @@ bool test::IUtility::CAN() {
             _CAN.datalen   = sizeof(_CAN.data);
             _CAN.timestamp = 0;
 
-            memcpy(tx, &_CAN, sizeof(_CAN));
+            std::cout << std::hex << _CAN.can_id << std::endl;
+
+            for (const auto& __C: _CAN.data)
+                std::cout << __C << " ";
+
+            std::cout << std::endl;
+
+            // memcpy(tx, &_CAN, sizeof(_CAN));
         }
 
         else if (pick_CAN == 3) {

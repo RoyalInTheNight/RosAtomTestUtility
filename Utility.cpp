@@ -936,6 +936,7 @@ bool test::IUtility::CAN() {
             std::stringstream __sstream;
             std::stringstream __sstreamEnterTreatment;
             std::vector<std::string> enter;
+            std::vector<std::string> n_str;
 
             _CAN.msg_id = 1;
 
@@ -961,18 +962,61 @@ bool test::IUtility::CAN() {
             else if (enter.at(1) == "std")
                 _CAN.msg_type = 0;
 
-            uint8_t _ch = 0;
+            uint8_t   _ch = 0;
+            uint32_t _end = enter[2].size();
+            
+            std::vector<char> __dst;
 
-            if (enter.at(2).size() % 2 != 0) {
-                for (int u = 1, y = 0; u < enter.at(2).size() - 1; u += 2, y++) {
-                    __sstreamEnterTreatment << std::hex << enter[2][u - 1] << enter[2][u];
-                    __sstreamEnterTreatment >> _ch;
+            if (_end % 2 != 0) {
+                std::string n_enter = enter[2];
+                            n_enter.pop_back();
 
-                    std::cout << _ch << std::endl;
+                for (uint32_t y = 0; y < n_enter.size(); y++) {
+                    std::string s_str;
+
+                    if ((y % 2) == 0) {
+                        s_str.push_back(n_enter.at(y));
+                        n_str.push_back(s_str);
+
+                        s_str.clear();
+                    }
+
+                    else
+                        s_str.push_back(n_enter.at(y));
+                }
+
+                n_str.push_back(std::to_string(enter[2].at(enter[2].size() - 1)));
+            }
+
+            else {
+                std::string n_enter = enter[2];
+
+                for (uint32_t y = 0; y < n_enter.size(); y++) {
+                    std::string s_str;
+
+                    if ((y % 2) == 0) {
+                        s_str.push_back(n_enter.at(y));
+                        n_str.push_back(s_str);
+
+                        s_str.clear();
+                    }
+
+                    else
+                        s_str.push_back(n_enter.at(y));
                 }
             }
 
-            _CAN.datalen   = enter.at(2).size() % 2 != 0 ? ((enter.at(2).size() - 1) / 2) + 1 : enter.at(2).size() / 2;
+            for (uint32_t y = 0; y < n_str.size(); y++) {
+                __sstreamEnterTreatment << std::hex << n_str[y];
+                __sstreamEnterTreatment >> _ch;
+
+                _CAN.data[y] = _ch;
+
+                _ch = 0;
+                __sstreamEnterTreatment.str().clear();
+            }
+
+            _CAN.datalen = enter.at(2).size() % 2 != 0 ? ((enter.at(2).size() - 1) / 2) + 1 : enter.at(2).size() / 2;
 
             std::cout << "len:  " << (int)_CAN.datalen << std::endl;
             std::cout << "id:   " << std::hex << (int)_CAN.can_id  << std::endl

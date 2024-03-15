@@ -971,6 +971,13 @@ bool test::IUtility::CAN() {
             }
 
             _CAN.datalen   = enter.at(2).size() / 2;
+
+            std::cout << (int)_CAN.datalen << std::endl;
+            std::cout << std::hex << (int)_CAN.can_id  << std::endl;
+            
+            for (const auto& _C: _CAN.data)
+                std::cout << std::hex << _C << " ";
+
             _CAN.timestamp = 0;
 
             // std::cout << _CAN.can_id << std::endl;

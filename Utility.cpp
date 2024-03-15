@@ -968,7 +968,7 @@ bool test::IUtility::CAN() {
                     __sstreamEnterTreatment << std::hex << enter[2][u - 1] << enter[2][u];
                     __sstreamEnterTreatment >> _ch;
 
-                    _CAN.data[y] = _ch;
+                    std::cout << _ch << std::endl;
                 }
             }
 

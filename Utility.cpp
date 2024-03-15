@@ -948,8 +948,8 @@ bool test::IUtility::CAN() {
 
             enter = split(__string, "/");
 
-            for (int i = 0; i < enter.size(); i++)
-                std::cout << enter.at(i) << std::endl;
+            //for (int i = 0; i < enter.size(); i++)
+             //   std::cout << enter.at(i) << std::endl;
 
             __sstream << std::hex << enter.at(0);
             __sstream >> _CAN.can_id;

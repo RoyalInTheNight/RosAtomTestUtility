@@ -980,13 +980,16 @@ bool test::IUtility::CAN() {
             for (uint32_t y = 0; y < __dst.size(); y++)
                 _CAN.data[y] = __dst[y];
 
-            for (const auto& __: _CAN.data)
-                std::cout << (int32_t)__ << std::endl;
+            //for (const auto& __: _CAN.data)
+            //    std::cout << (int32_t)__ << std::endl;
 
             _CAN.timestamp = 0;
             _CAN.datalen   = sizeof(_CAN.data);
 
             memcpy(tx, &_CAN, 19);
+
+            for (uint32_t y = 0; y < 20; y++)
+                std::cout << "tx: " << tx[y] << std::endl;
         }
 
         else if (pick_CAN == 3) {

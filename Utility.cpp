@@ -910,7 +910,7 @@ bool test::IUtility::CAN() {
             for (int t = 0; t < CAN.size(); t++) {
                 if (CAN[t].msg_id == 1) {
                     std::cout << "ПРИЕМ CAN1"                   << std::endl
-                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
+                              << "№ТРАНЗАКЦИИ\tID\t\tTYPE\tDATA"  << std::endl
                               << (count + 1)                    << "\t\t"
                               << std::hex << (int)CAN[t].can_id << "\t";
 
@@ -1011,9 +1011,9 @@ bool test::IUtility::CAN() {
 
         else if (pick_CAN == 3) {
             for (int t = 0; t < CAN.size(); t++) {
-                if (CAN[t].msg_id == 2) {
-                    std::cout << "ПРИЕМ CAN2"                   << std::endl
-                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
+                if (CAN[t].msg_id == 1) {
+                    std::cout << "ПРИЕМ CAN1"                   << std::endl
+                              << "№ТРАНЗАКЦИИ\tID\t\tTYPE\tDATA"  << std::endl
                               << (count + 1)                    << "\t\t"
                               << std::hex << (int)CAN[t].can_id << "\t";
 
@@ -1079,9 +1079,9 @@ bool test::IUtility::CAN() {
 
         else if (pick_CAN == 5) {
             for (int t = 0; t < CAN.size(); t++) {
-                if (CAN[t].msg_id == 3) {
-                    std::cout << "ПРИЕМ CAN3"                   << std::endl
-                              << "№ТРАНЗАКЦИИ\tID\tTYPE\tDATA"  << std::endl
+                if (CAN[t].msg_id == 1) {
+                    std::cout << "ПРИЕМ CAN1"                   << std::endl
+                              << "№ТРАНЗАКЦИИ\tID\t\tTYPE\tDATA"  << std::endl
                               << (count + 1)                    << "\t\t"
                               << std::hex << (int)CAN[t].can_id << "\t";
 

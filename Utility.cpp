@@ -1003,6 +1003,8 @@ bool test::IUtility::CAN() {
 
                     else
                         s_str.push_back(n_enter.at(y));
+
+                    std::cout << ColoredGCIText::red(n_str.at(y)) << std::endl;
                 }
             }
 

@@ -962,63 +962,57 @@ bool test::IUtility::CAN() {
             else if (enter.at(1) == "std")
                 _CAN.msg_type = 0;
 
-            uint8_t   _ch = 0;
+            std::string   _ch;
+            uint8_t  __ch = 0;
             uint32_t _end = enter[2].size();
             
-            std::vector<char> __dst;
+            std::vector<uint8_t> __dst;
 
             if (_end % 2 != 0) {
                 std::string n_enter = enter[2];
                             n_enter.pop_back();
 
-                for (uint32_t y = 0; y < n_enter.size(); y++) {
-                    std::string s_str;
+                for (uint32_t y = 1; y < n_enter.size(); y += 2) {
+                    _ch.push_back(n_enter[y - 1]);
+                    _ch.push_back(n_enter[y]);
 
-                    if ((y % 2) == 0) {
-                        s_str.push_back(n_enter.at(y));
-                        n_str.push_back(s_str);
+                    __ch = std::stoi(_ch);
+                    __dst.push_back(__ch);
 
-                        s_str.clear();
-                    }
+                    __ch = 0;
 
-                    else
-                        s_str.push_back(n_enter.at(y));
+                    _ch.clear();
                 }
 
-                n_str.push_back(std::to_string(enter[2].at(enter[2].size() - 1)));
+                __ch = enter[2].at(enter[2].size() - 1);
+
+                __dst.push_back(__ch);
+                __ch = 0;
+
+                // n_str.push_back(std::to_string(enter[2].at(enter[2].size() - 1)));
             }
 
             else {
                 std::string n_enter = enter[2];
 
                 for (uint32_t y = 0; y < n_enter.size(); y++) {
-                    std::string s_str;
+                    _ch.push_back(n_enter[y - 1]);
+                    _ch.push_back(n_enter[y]);
 
-                    if ((y % 2) == 0) {
-                        s_str.push_back(n_enter.at(y));
-                        n_str.push_back(s_str);
+                    __ch = std::stoi(_ch);
+                    __dst.push_back(__ch);
 
-                        s_str.clear();
-                    }
+                    __ch = 0;
 
-                    else
-                        s_str.push_back(n_enter.at(y));
-
-                    std::cout << ColoredGCIText::red(n_str.at(y)) << std::endl;
+                    _ch.clear();
                 }
             }
 
-            for (uint32_t y = 0; y < n_str.size(); y++) {
-                //__sstreamEnterTreatment << std::hex << n_str[y];
-                //__sstreamEnterTreatment >> _ch;
+            for (uint32_t o = 0; o < __dst.size(); o++)
+                _CAN.data[o] = __dst[o];
 
-                _CAN.data[y] = (char)std::stoi(n_str[y]);
-
-                //_ch = 0;
-                //__sstreamEnterTreatment.str().clear();
-            }
-
-            _CAN.datalen = enter.at(2).size() % 2 != 0 ? ((enter.at(2).size() - 1) / 2) + 1 : enter.at(2).size() / 2;
+            __dst.clear();
+            _CAN.datalen = __dst.size();
 
             std::cout << "len:  " << (int)_CAN.datalen << std::endl;
             std::cout << "id:   " << std::hex << (int)_CAN.can_id  << std::endl

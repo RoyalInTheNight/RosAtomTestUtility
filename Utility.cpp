@@ -974,8 +974,17 @@ bool test::IUtility::CAN() {
                 _ch.clear();
             }
 
-            for (const auto& __: __dst)
+            // for (const auto& __: __dst)
+            //     std::cout << (int32_t)__ << std::endl;
+
+            for (uint32_t y = 0; y < __dst.size(); y++)
+                _CAN.data[y] = __dst[y];
+
+            for (const auto& __: _CAN.data)
                 std::cout << (int32_t)__ << std::endl;
+
+            _CAN.timestamp = 0;
+            _CAN.datalen   = sizeof(_CAN.data);
 
             memcpy(tx, &_CAN, 19);
         }

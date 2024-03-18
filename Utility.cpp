@@ -1007,13 +1007,13 @@ bool test::IUtility::CAN() {
             }
 
             for (uint32_t y = 0; y < n_str.size(); y++) {
-                __sstreamEnterTreatment << std::hex << n_str[y];
-                __sstreamEnterTreatment >> _ch;
+                //__sstreamEnterTreatment << std::hex << n_str[y];
+                //__sstreamEnterTreatment >> _ch;
 
-                _CAN.data[y] = _ch;
+                _CAN.data[y] = (char)std::stoi(n_str[y]);
 
-                _ch = 0;
-                __sstreamEnterTreatment.str().clear();
+                //_ch = 0;
+                //__sstreamEnterTreatment.str().clear();
             }
 
             _CAN.datalen = enter.at(2).size() % 2 != 0 ? ((enter.at(2).size() - 1) / 2) + 1 : enter.at(2).size() / 2;

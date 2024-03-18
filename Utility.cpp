@@ -986,7 +986,17 @@ bool test::IUtility::CAN() {
             _CAN.timestamp = 0;
             _CAN.datalen   = sizeof(_CAN.data);
 
-            memcpy(tx, &_CAN, 19);
+            // memcpy(tx, &_CAN, 19);
+
+            tx[0] = _CAN.msg_id;
+
+            memcpy(&tx[1], (char *)&_CAN.can_id, sizeof(_CAN.can_id));
+
+            tx[5] = _CAN.datalen;
+            tx[6] = _CAN.msg_type;
+            
+            memcpy(&tx[7], (char *)&_CAN.timestamp, sizeof(_CAN.timestamp));
+            memcpy(&tx[11], (char *)&_CAN.data, _CAN.datalen);
 
             for (uint32_t y = 0; y < 20; y++)
                 std::cout << "tx: " << (int)tx[y] << std::endl;

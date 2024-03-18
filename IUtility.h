@@ -37,17 +37,17 @@ namespace IOSignal {
         CAN() {}
         CAN(char *rx, uint32_t begPoint, uint32_t endPoint) {
             msg_id    =   rx[begPoint];
-            can_id    = ((rx[begPoint +  1] << 3) + 
-                         (rx[begPoint +  2] << 2) +
-                         (rx[begPoint +  3] << 1) +
-                         (rx[begPoint +  4]));
+            can_id    = ((rx[begPoint +  1] << 24) | 
+                         (rx[begPoint +  2] << 16) |
+                         (rx[begPoint +  3] <<  8) |
+                         (rx[begPoint +  4] >>  0));
 
             datalen   =   rx[begPoint +  5];
             msg_type  =   rx[begPoint +  6];
-            timestamp = ((rx[begPoint +  7] << 3) +
-                         (rx[begPoint +  8] << 2) +
-                         (rx[begPoint +  9] << 1) +
-                         (rx[begPoint + 10]));
+            timestamp = ((rx[begPoint +  7] << 24) |
+                         (rx[begPoint +  8] << 16) |
+                         (rx[begPoint +  9] <<  8) |
+                         (rx[begPoint + 10] >>  0));
             
             data[0] = rx[begPoint + 11];
             data[1] = rx[begPoint + 12];

@@ -931,12 +931,13 @@ bool test::IUtility::CAN() {
         else if (pick_CAN == 2) {
             IOSignal::__CAN _CAN;
 
-            std::string __e;
-            std::string __string;
-            std::stringstream __sstream;
-            std::stringstream __sstreamEnterTreatment;
             std::vector<std::string> enter;
-            std::vector<std::string> n_str;
+            std::string           __string;
+            std::stringstream    __sstream;
+            std::vector<uint8_t>     __dst;
+
+            std::string  _ch;
+            uint8_t __ch = 0;
 
             _CAN.msg_id = 1;
 
@@ -950,9 +951,6 @@ bool test::IUtility::CAN() {
 
             enter = split(__string, "/");
 
-            //for (int i = 0; i < enter.size(); i++)
-             //   std::cout << enter.at(i) << std::endl;
-
             __sstream << std::hex << enter.at(0);
             __sstream >> _CAN.can_id;
 
@@ -962,77 +960,22 @@ bool test::IUtility::CAN() {
             else if (enter.at(1) == "std")
                 _CAN.msg_type = 0;
 
-            std::string   _ch;
-            uint8_t  __ch = 0;
             uint32_t _end = enter[2].size();
-            
-            std::vector<uint8_t> __dst;
 
-            if (_end % 2 != 0) {
-                std::string n_enter = enter[2];
-                            n_enter.pop_back();
+            for (uint32_t y = 1; y < _end; y += 2) {
+                _ch.push_back(enter[2][y - 1]);
+                _ch.push_back(enter[2][y]);
 
-                for (uint32_t y = 1; y < n_enter.size(); y += 2) {
-                    _ch.push_back(n_enter[y - 1]);
-                    _ch.push_back(n_enter[y]);
-
-                    __ch = std::stoi(_ch);
-                    __dst.push_back(__ch);
-
-                    __ch = 0;
-
-                    _ch.clear();
-                }
-
-                __ch = enter[2].at(enter[2].size() - 1);
-
+                __ch = std::stoi(_ch);
                 __dst.push_back(__ch);
+
                 __ch = 0;
 
-                // n_str.push_back(std::to_string(enter[2].at(enter[2].size() - 1)));
+                _ch.clear();
             }
 
-            else {
-                std::string n_enter = enter[2];
-
-                for (uint32_t y = 0; y < n_enter.size(); y++) {
-                    _ch.push_back(n_enter[y - 1]);
-                    _ch.push_back(n_enter[y]);
-
-                    __ch = std::stoi(_ch);
-                    __dst.push_back(__ch);
-
-                    __ch = 0;
-
-                    _ch.clear();
-                }
-            }
-
-            std::cout << ColoredGCIText::red(std::to_string(__dst.size())) << std::endl;
-
-            for (uint32_t o = 0; o < __dst.size(); o++)
-                _CAN.data[o] = __dst[o];
-
-            __dst.clear();
-            _CAN.datalen = __dst.size();
-
-            std::cout << "len:  " << (int)_CAN.datalen << std::endl;
-            std::cout << "id:   " << std::hex << (int)_CAN.can_id  << std::endl
-                      << "data: ";
-            
-            for (const auto& _C: _CAN.data)
-                std::cout << std::hex << (int)_C << " ";
-
-            std::cout << std::endl;
-
-            _CAN.timestamp = 0;
-
-            // std::cout << _CAN.can_id << std::endl;
-
-            // for (const auto& __C: _CAN.data)
-            //     std::cout << __C << " ";
-
-            // std::cout << std::endl;
+            for (const auto& __: __dst)
+                std::cout << (int32_t)__ << std::endl;
 
             memcpy(tx, &_CAN, 19);
         }

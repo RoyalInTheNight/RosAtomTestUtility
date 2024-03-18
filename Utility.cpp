@@ -1008,6 +1008,8 @@ bool test::IUtility::CAN() {
                 }
             }
 
+            std::cout << ColoredGCIText::red(std::to_string(__dst.size())) << std::endl;
+
             for (uint32_t o = 0; o < __dst.size(); o++)
                 _CAN.data[o] = __dst[o];
 

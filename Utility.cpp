@@ -990,7 +990,12 @@ bool test::IUtility::CAN() {
 
             tx[0] = _CAN.msg_id;
 
-            memcpy(&tx[1], (char *)&_CAN.can_id, sizeof(_CAN.can_id));
+            // memcpy(&tx[1], (char *)&_CAN.can_id, sizeof(_CAN.can_id));
+
+            tx[1] = _CAN.can_id >> 24;
+            tx[2] = _CAN.can_id >> 16;
+            tx[3] = _CAN.can_id >> 8;
+            tx[4] = _CAN.can_id << 0;
 
             tx[5] = _CAN.datalen;
             tx[6] = _CAN.msg_type;
@@ -1000,6 +1005,8 @@ bool test::IUtility::CAN() {
 
             for (uint32_t y = 0; y < 20; y++)
                 std::cout << "tx: " << (int)tx[y] << std::endl;
+
+            memset(&_CAN, 0, sizeof(_CAN));
         }
 
         else if (pick_CAN == 3) {

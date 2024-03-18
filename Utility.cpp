@@ -989,7 +989,7 @@ bool test::IUtility::CAN() {
             memcpy(tx, &_CAN, 19);
 
             for (uint32_t y = 0; y < 20; y++)
-                std::cout << "tx: " << tx[y] << std::endl;
+                std::cout << "tx: " << (int)tx[y] << std::endl;
         }
 
         else if (pick_CAN == 3) {
